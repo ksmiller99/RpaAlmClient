@@ -4,10 +4,30 @@ A Windows Forms desktop client application for managing RPA (Robotic Process Aut
 
 ## Features
 
-- **Status Management** - CRUD operations for automation status tracking
-- **API Integration** - RESTful API client for backend communication
+- **Complete Entity Management** - Full CRUD operations for all 22 RPA ALM entities
+- **Main Menu Navigation** - Organized access to all management forms by category
+- **API Integration** - RESTful API client for backend communication with all endpoints
 - **Configuration Management** - Robust configuration with validation and error handling
-- **Windows Forms UI** - Modern desktop interface for data management
+- **Windows Forms UI** - Modern desktop interface for comprehensive data management
+
+### Available Management Forms
+
+**Reference Data (11 forms):**
+- Status, Complexity, Medal, Region, Segment, Function
+- SLA Item Type, Automation Environment Type, AD Domain
+- Enhancement, Story Point Cost
+
+**Core Entities (9 forms):**
+- Automation Management (workflows and ownership)
+- SLA Master & SLA Item (service level agreements)
+- Virtual Identity & VI Assignments (bot accounts and assignments)
+- Enhancement User Story (Jira integration)
+- Automation Environment (CMDB linkage)
+- Automation Log Entry & SLA Log Entry (audit trails)
+
+**Helper Tables (2 forms):**
+- Employee Directory (JJEDS Helper)
+- CMDB Helper (application cache)
 
 ## Prerequisites
 
@@ -74,21 +94,30 @@ The configuration system includes:
 ```
 RpaAlmClient/
 ├── Configuration/
-│   └── AppConfig.cs          # Configuration management with validation
+│   └── AppConfig.cs              # Configuration management with validation
 ├── Forms/
-│   └── StatusManagementForm.cs  # Status management UI
+│   ├── MainMenuForm.cs           # Main navigation menu
+│   ├── *ManagementForm.cs        # 22 entity management forms (Status, Automation, etc.)
+│   └── ...
 ├── Models/
-│   ├── StatusDto.cs          # Status data transfer object
-│   ├── StatusCreateRequest.cs
-│   ├── StatusUpdateRequest.cs
-│   └── ApiResponse.cs        # API response wrapper
+│   ├── *Dto.cs                   # 22 entity DTOs (data transfer objects)
+│   ├── *CreateRequest.cs         # 22 create request models
+│   ├── *UpdateRequest.cs         # 22 update request models
+│   └── ApiResponse.cs            # API response wrapper
 ├── Services/
-│   ├── ApiClient.cs          # Generic HTTP client
-│   └── StatusApiClient.cs    # Status-specific API client
-├── Program.cs                # Application entry point
-├── appsettings.json          # Configuration file
+│   ├── ApiClient.cs              # Generic HTTP client base class
+│   ├── *ApiClient.cs             # 22 entity-specific API clients
+│   └── ...
+├── Program.cs                    # Application entry point
+├── appsettings.json              # Configuration file
 └── README.md
 ```
+
+**Statistics:**
+- 23 Forms (22 entity forms + 1 main menu)
+- 66 Model classes (22 DTOs + 22 CreateRequests + 22 UpdateRequests)
+- 22 API Client services
+- Full CRUD operations for all entities
 
 ## Technologies Used
 
@@ -119,13 +148,29 @@ The backend uses SQL Server with the following main entities:
 
 ## API Endpoints
 
-The client currently integrates with the following API endpoints:
+The client integrates with all 22 RPA ALM API endpoints with full CRUD operations:
 
-- `GET /api/status` - Retrieve all statuses
-- `GET /api/status/{id}` - Retrieve a specific status
-- `POST /api/status` - Create a new status
-- `PUT /api/status/{id}` - Update an existing status
-- `DELETE /api/status/{id}` - Delete a status
+**Reference Data Endpoints (11):**
+- `/api/status`, `/api/complexity`, `/api/medal`, `/api/region`, `/api/segment`
+- `/api/function`, `/api/slaitemtype`, `/api/automationenvironmenttype`
+- `/api/addomain`, `/api/enhancement`, `/api/storypointcost`
+
+**Core Entity Endpoints (9):**
+- `/api/automation` - RPA automation workflows with ownership
+- `/api/slamaster` - SLA agreements
+- `/api/slaitem` - SLA line items
+- `/api/virtualidentity` - Service accounts and bot identities
+- `/api/viassignments` - Virtual identity assignments
+- `/api/enhancementuserstory` - Jira integration
+- `/api/automationenvironment` - CMDB application linkage
+- `/api/automationlogentry` - Automation audit logs
+- `/api/slalogentry` - SLA audit logs
+
+**Helper Table Endpoints (2):**
+- `/api/jjedshelper` - Employee directory cache
+- `/api/cmdbhelper` - CMDB application cache
+
+Each endpoint supports: `GET /`, `GET /{id}`, `POST /`, `PUT /{id}`, `DELETE /{id}`
 
 ## Development
 
