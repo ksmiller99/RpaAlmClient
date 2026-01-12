@@ -12,7 +12,7 @@ public partial class MainMenuForm : Form
     private void InitializeComponents()
     {
         this.Text = "RPA ALM Client - Main Menu";
-        this.Size = new Size(720, 420);
+        this.Size = new Size(720, 700);
         this.StartPosition = FormStartPosition.CenterScreen;
 
         var label = new Label
@@ -52,20 +52,49 @@ public partial class MainMenuForm : Form
         CreateMenuButton("Enhancement", () => new EnhancementManagementForm().Show(), new Point(50, yPos));
         CreateMenuButton("Story Point Cost", () => new StoryPointCostManagementForm().Show(), new Point(240, yPos));
 
-        // Note about future features
+        // Core Entities Section
         yPos += 60;
-        var lblNote = new Label
+        var lblCoreEntities = new Label
         {
-            Text = "Core entity forms (Automation, SLA, Virtual Identity, etc.) coming soon...",
-            Font = new Font("Arial", 9, FontStyle.Italic),
-            ForeColor = System.Drawing.Color.Gray,
+            Text = "Core Entities:",
+            Font = new Font("Arial", 12, FontStyle.Bold),
             Location = new Point(50, yPos),
-            Size = new Size(600, 20)
+            Size = new Size(200, 25)
         };
+        this.Controls.Add(lblCoreEntities);
+
+        yPos += 30;
+        CreateMenuButton("Automation", () => new AutomationManagementForm().Show(), new Point(50, yPos));
+        CreateMenuButton("SLA Master", () => new SlaMasterManagementForm().Show(), new Point(240, yPos));
+        CreateMenuButton("SLA Item", () => new SlaItemManagementForm().Show(), new Point(430, yPos));
+
+        yPos += 40;
+        CreateMenuButton("Virtual Identity", () => new VirtualIdentityManagementForm().Show(), new Point(50, yPos));
+        CreateMenuButton("VI Assignments", () => new ViAssignmentsManagementForm().Show(), new Point(240, yPos));
+        CreateMenuButton("Enhancement User Story", () => new EnhancementUserStoryManagementForm().Show(), new Point(430, yPos));
+
+        yPos += 40;
+        CreateMenuButton("Automation Environment", () => new AutomationEnvironmentManagementForm().Show(), new Point(50, yPos));
+        CreateMenuButton("Automation Log", () => new AutomationLogEntryManagementForm().Show(), new Point(240, yPos));
+        CreateMenuButton("SLA Log", () => new SlaLogEntryManagementForm().Show(), new Point(430, yPos));
+
+        // Helper Tables Section
+        yPos += 60;
+        var lblHelperTables = new Label
+        {
+            Text = "Helper Tables:",
+            Font = new Font("Arial", 12, FontStyle.Bold),
+            Location = new Point(50, yPos),
+            Size = new Size(200, 25)
+        };
+        this.Controls.Add(lblHelperTables);
+
+        yPos += 30;
+        CreateMenuButton("Employee Directory", () => new JjedsHelperManagementForm().Show(), new Point(50, yPos));
+        CreateMenuButton("CMDB Helper", () => new CmdbHelperManagementForm().Show(), new Point(240, yPos));
 
         this.Controls.Add(label);
         this.Controls.Add(lblLookupTables);
-        this.Controls.Add(lblNote);
     }
 
     private void CreateMenuButton(string text, Action onClick, Point location)
