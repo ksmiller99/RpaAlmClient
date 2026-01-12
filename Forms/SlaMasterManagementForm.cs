@@ -6,10 +6,13 @@ namespace RpaAlmClient.Forms;
 public partial class SlaMasterManagementForm : Form
 {
     private readonly SlaMasterApiClient _slaMasterApiClient;
+    private readonly AutomationApiClient _automationApiClient;
+    private readonly ComplexityApiClient _complexityApiClient;
+    private readonly MedalApiClient _medalApiClient;
     private DataGridView dgvSlaMasters = null!;
-    private TextBox txtAutomationID = null!;
-    private TextBox txtComplexityID = null!;
-    private TextBox txtMedalID = null!;
+    private ComboBox cmbAutomation = null!;
+    private ComboBox cmbComplexity = null!;
+    private ComboBox cmbMedal = null!;
     private TextBox txtZcode = null!;
     private TextBox txtCostCenter = null!;
     private TextBox txtStartDate = null!;
@@ -30,7 +33,12 @@ public partial class SlaMasterManagementForm : Form
     public SlaMasterManagementForm()
     {
         _slaMasterApiClient = new SlaMasterApiClient();
+        _automationApiClient = new AutomationApiClient();
+        _complexityApiClient = new ComplexityApiClient();
+        _medalApiClient = new MedalApiClient();
+
         InitializeComponents();
+        _ = LoadLookupDataAsync();
         _ = LoadSlaMastersAsync();
     }
 
@@ -60,16 +68,37 @@ public partial class SlaMasterManagementForm : Form
         int yIncrement = 40;
         int currentY = startY;
 
-        lblAutomationID = new Label { Text = "AutomationID:", Location = new Point(labelX, currentY), Size = new Size(120, 23) };
-        txtAutomationID = new TextBox { Location = new Point(textBoxX, currentY), Size = new Size(250, 23) };
+        lblAutomationID = new Label { Text = "Automation:", Location = new Point(labelX, currentY), Size = new Size(120, 23) };
+        cmbAutomation = new ComboBox
+        {
+            Location = new Point(textBoxX, currentY),
+            Size = new Size(250, 23),
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            DisplayMember = "Name",
+            ValueMember = "Id"
+        };
         currentY += yIncrement;
 
-        lblComplexityID = new Label { Text = "ComplexityID:", Location = new Point(labelX, currentY), Size = new Size(120, 23) };
-        txtComplexityID = new TextBox { Location = new Point(textBoxX, currentY), Size = new Size(250, 23) };
+        lblComplexityID = new Label { Text = "Complexity:", Location = new Point(labelX, currentY), Size = new Size(120, 23) };
+        cmbComplexity = new ComboBox
+        {
+            Location = new Point(textBoxX, currentY),
+            Size = new Size(250, 23),
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            DisplayMember = "Code",
+            ValueMember = "Id"
+        };
         currentY += yIncrement;
 
-        lblMedalID = new Label { Text = "MedalID:", Location = new Point(labelX, currentY), Size = new Size(120, 23) };
-        txtMedalID = new TextBox { Location = new Point(textBoxX, currentY), Size = new Size(250, 23) };
+        lblMedalID = new Label { Text = "Medal:", Location = new Point(labelX, currentY), Size = new Size(120, 23) };
+        cmbMedal = new ComboBox
+        {
+            Location = new Point(textBoxX, currentY),
+            Size = new Size(250, 23),
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            DisplayMember = "Code",
+            ValueMember = "Id"
+        };
         currentY += yIncrement;
 
         lblZcode = new Label { Text = "Zcode:", Location = new Point(labelX, currentY), Size = new Size(120, 23) };
@@ -104,7 +133,7 @@ public partial class SlaMasterManagementForm : Form
         {
             dgvSlaMasters,
             lblAutomationID, lblComplexityID, lblMedalID, lblZcode, lblCostCenter, lblStartDate, lblEndDate,
-            txtAutomationID, txtComplexityID, txtMedalID, txtZcode, txtCostCenter, txtStartDate, txtEndDate,
+            cmbAutomation, cmbComplexity, cmbMedal, txtZcode, txtCostCenter, txtStartDate, txtEndDate,
             btnAdd, btnUpdate, btnDelete, btnRefresh
         });
     }
@@ -123,6 +152,29 @@ public partial class SlaMasterManagementForm : Form
         }
     }
 
+    private async Task LoadLookupDataAsync()
+    {
+        try
+        {
+            var automations = await _automationApiClient.GetAllAsync();
+            var complexities = await _complexityApiClient.GetAllAsync();
+            var medals = await _medalApiClient.GetAllAsync();
+
+            // Add empty option at the beginning
+            automations.Insert(0, new AutomationDto { Id = 0, Name = "(None)" });
+            complexities.Insert(0, new ComplexityDto { Id = 0, Code = "(None)" });
+            medals.Insert(0, new MedalDto { Id = 0, Code = "(None)" });
+
+            cmbAutomation.DataSource = automations;
+            cmbComplexity.DataSource = complexities;
+            cmbMedal.DataSource = medals;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error loading lookup data: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
     private void DgvSlaMasters_SelectionChanged(object? sender, EventArgs e)
     {
         if (dgvSlaMasters.SelectedRows.Count > 0)
@@ -133,9 +185,9 @@ public partial class SlaMasterManagementForm : Form
             if (slaMaster != null)
             {
                 _selectedSlaMasterId = slaMaster.Id;
-                txtAutomationID.Text = slaMaster.AutomationID?.ToString() ?? string.Empty;
-                txtComplexityID.Text = slaMaster.ComplexityID?.ToString() ?? string.Empty;
-                txtMedalID.Text = slaMaster.MedalID?.ToString() ?? string.Empty;
+                cmbAutomation.SelectedValue = slaMaster.AutomationID ?? 0;
+                cmbComplexity.SelectedValue = slaMaster.ComplexityID ?? 0;
+                cmbMedal.SelectedValue = slaMaster.MedalID ?? 0;
                 txtZcode.Text = slaMaster.Zcode ?? string.Empty;
                 txtCostCenter.Text = slaMaster.CostCenter ?? string.Empty;
                 txtStartDate.Text = slaMaster.StartDate?.ToString("yyyy-MM-dd") ?? string.Empty;
@@ -152,9 +204,9 @@ public partial class SlaMasterManagementForm : Form
         {
             var request = new SlaMasterCreateRequest
             {
-                AutomationID = ParseNullableInt(txtAutomationID.Text),
-                ComplexityID = ParseNullableInt(txtComplexityID.Text),
-                MedalID = ParseNullableInt(txtMedalID.Text),
+                AutomationID = GetComboBoxValue(cmbAutomation),
+                ComplexityID = GetComboBoxValue(cmbComplexity),
+                MedalID = GetComboBoxValue(cmbMedal),
                 Zcode = string.IsNullOrWhiteSpace(txtZcode.Text) ? null : txtZcode.Text.Trim(),
                 CostCenter = string.IsNullOrWhiteSpace(txtCostCenter.Text) ? null : txtCostCenter.Text.Trim(),
                 StartDate = ParseNullableDateTime(txtStartDate.Text),
@@ -183,9 +235,9 @@ public partial class SlaMasterManagementForm : Form
 
             var request = new SlaMasterUpdateRequest
             {
-                AutomationID = ParseNullableInt(txtAutomationID.Text),
-                ComplexityID = ParseNullableInt(txtComplexityID.Text),
-                MedalID = ParseNullableInt(txtMedalID.Text),
+                AutomationID = GetComboBoxValue(cmbAutomation),
+                ComplexityID = GetComboBoxValue(cmbComplexity),
+                MedalID = GetComboBoxValue(cmbMedal),
                 Zcode = string.IsNullOrWhiteSpace(txtZcode.Text) ? null : txtZcode.Text.Trim(),
                 CostCenter = string.IsNullOrWhiteSpace(txtCostCenter.Text) ? null : txtCostCenter.Text.Trim(),
                 StartDate = ParseNullableDateTime(txtStartDate.Text),
@@ -235,9 +287,9 @@ public partial class SlaMasterManagementForm : Form
     private void ClearForm()
     {
         _selectedSlaMasterId = null;
-        txtAutomationID.Text = string.Empty;
-        txtComplexityID.Text = string.Empty;
-        txtMedalID.Text = string.Empty;
+        cmbAutomation.SelectedIndex = 0;
+        cmbComplexity.SelectedIndex = 0;
+        cmbMedal.SelectedIndex = 0;
         txtZcode.Text = string.Empty;
         txtCostCenter.Text = string.Empty;
         txtStartDate.Text = string.Empty;
@@ -266,5 +318,12 @@ public partial class SlaMasterManagementForm : Form
             return result;
 
         return null;
+    }
+
+    private int? GetComboBoxValue(ComboBox combo)
+    {
+        if (combo.SelectedValue == null || (int)combo.SelectedValue == 0)
+            return null;
+        return (int)combo.SelectedValue;
     }
 }

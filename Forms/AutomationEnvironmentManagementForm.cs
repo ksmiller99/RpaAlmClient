@@ -6,10 +6,12 @@ namespace RpaAlmClient.Forms;
 public partial class AutomationEnvironmentManagementForm : Form
 {
     private readonly AutomationEnvironmentApiClient _automationEnvironmentApiClient;
+    private readonly AutomationApiClient _automationApiClient;
+    private readonly AutomationEnvironmentTypeApiClient _automationEnvironmentTypeApiClient;
     private DataGridView dgvAutomationEnvironments = null!;
-    private TextBox txtAutomationID = null!;
+    private ComboBox cmbAutomation = null!;
     private TextBox txtAppID = null!;
-    private TextBox txtEnvironmentTypeID = null!;
+    private ComboBox cmbEnvironmentType = null!;
     private Button btnAdd = null!;
     private Button btnUpdate = null!;
     private Button btnDelete = null!;
@@ -22,7 +24,11 @@ public partial class AutomationEnvironmentManagementForm : Form
     public AutomationEnvironmentManagementForm()
     {
         _automationEnvironmentApiClient = new AutomationEnvironmentApiClient();
+        _automationApiClient = new AutomationApiClient();
+        _automationEnvironmentTypeApiClient = new AutomationEnvironmentTypeApiClient();
+
         InitializeComponents();
+        _ = LoadLookupDataAsync();
         _ = LoadAutomationEnvironmentsAsync();
     }
 
@@ -52,16 +58,30 @@ public partial class AutomationEnvironmentManagementForm : Form
         int yIncrement = 40;
         int currentY = startY;
 
-        lblAutomationID = new Label { Text = "AutomationID:", Location = new Point(labelX, currentY), Size = new Size(160, 23) };
-        txtAutomationID = new TextBox { Location = new Point(textBoxX, currentY), Size = new Size(170, 23) };
+        lblAutomationID = new Label { Text = "Automation:", Location = new Point(labelX, currentY), Size = new Size(160, 23) };
+        cmbAutomation = new ComboBox
+        {
+            Location = new Point(textBoxX, currentY),
+            Size = new Size(170, 23),
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            DisplayMember = "Name",
+            ValueMember = "Id"
+        };
         currentY += yIncrement;
 
         lblAppID = new Label { Text = "AppID:", Location = new Point(labelX, currentY), Size = new Size(160, 23) };
         txtAppID = new TextBox { Location = new Point(textBoxX, currentY), Size = new Size(170, 23), MaxLength = 50 };
         currentY += yIncrement;
 
-        lblEnvironmentTypeID = new Label { Text = "EnvironmentTypeID:", Location = new Point(labelX, currentY), Size = new Size(160, 23) };
-        txtEnvironmentTypeID = new TextBox { Location = new Point(textBoxX, currentY), Size = new Size(170, 23) };
+        lblEnvironmentTypeID = new Label { Text = "Environment Type:", Location = new Point(labelX, currentY), Size = new Size(160, 23) };
+        cmbEnvironmentType = new ComboBox
+        {
+            Location = new Point(textBoxX, currentY),
+            Size = new Size(170, 23),
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            DisplayMember = "Code",
+            ValueMember = "Id"
+        };
         currentY += yIncrement;
 
         // Buttons
@@ -80,7 +100,7 @@ public partial class AutomationEnvironmentManagementForm : Form
         {
             dgvAutomationEnvironments,
             lblAutomationID, lblAppID, lblEnvironmentTypeID,
-            txtAutomationID, txtAppID, txtEnvironmentTypeID,
+            cmbAutomation, txtAppID, cmbEnvironmentType,
             btnAdd, btnUpdate, btnDelete, btnRefresh
         });
     }
@@ -99,6 +119,26 @@ public partial class AutomationEnvironmentManagementForm : Form
         }
     }
 
+    private async Task LoadLookupDataAsync()
+    {
+        try
+        {
+            var automations = await _automationApiClient.GetAllAsync();
+            var environmentTypes = await _automationEnvironmentTypeApiClient.GetAllAsync();
+
+            // Add empty option at the beginning
+            automations.Insert(0, new AutomationDto { Id = 0, Name = "(None)" });
+            environmentTypes.Insert(0, new AutomationEnvironmentTypeDto { Id = 0, Code = "(None)" });
+
+            cmbAutomation.DataSource = automations;
+            cmbEnvironmentType.DataSource = environmentTypes;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error loading lookup data: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
     private void DgvAutomationEnvironments_SelectionChanged(object? sender, EventArgs e)
     {
         if (dgvAutomationEnvironments.SelectedRows.Count > 0)
@@ -109,9 +149,9 @@ public partial class AutomationEnvironmentManagementForm : Form
             if (automationEnvironment != null)
             {
                 _selectedAutomationEnvironmentId = automationEnvironment.Id;
-                txtAutomationID.Text = automationEnvironment.AutomationID?.ToString() ?? string.Empty;
+                cmbAutomation.SelectedValue = automationEnvironment.AutomationID ?? 0;
                 txtAppID.Text = automationEnvironment.AppID ?? string.Empty;
-                txtEnvironmentTypeID.Text = automationEnvironment.EnvironmentTypeID?.ToString() ?? string.Empty;
+                cmbEnvironmentType.SelectedValue = automationEnvironment.EnvironmentTypeID ?? 0;
                 btnUpdate.Enabled = true;
                 btnDelete.Enabled = true;
             }
@@ -124,9 +164,9 @@ public partial class AutomationEnvironmentManagementForm : Form
         {
             var request = new AutomationEnvironmentCreateRequest
             {
-                AutomationID = ParseNullableInt(txtAutomationID.Text),
+                AutomationID = GetComboBoxValue(cmbAutomation),
                 AppID = string.IsNullOrWhiteSpace(txtAppID.Text) ? null : txtAppID.Text.Trim(),
-                EnvironmentTypeID = ParseNullableInt(txtEnvironmentTypeID.Text)
+                EnvironmentTypeID = GetComboBoxValue(cmbEnvironmentType)
             };
 
             await _automationEnvironmentApiClient.CreateAsync(request);
@@ -151,9 +191,9 @@ public partial class AutomationEnvironmentManagementForm : Form
 
             var request = new AutomationEnvironmentUpdateRequest
             {
-                AutomationID = ParseNullableInt(txtAutomationID.Text),
+                AutomationID = GetComboBoxValue(cmbAutomation),
                 AppID = string.IsNullOrWhiteSpace(txtAppID.Text) ? null : txtAppID.Text.Trim(),
-                EnvironmentTypeID = ParseNullableInt(txtEnvironmentTypeID.Text)
+                EnvironmentTypeID = GetComboBoxValue(cmbEnvironmentType)
             };
 
             await _automationEnvironmentApiClient.UpdateAsync(_selectedAutomationEnvironmentId.Value, request);
@@ -199,9 +239,9 @@ public partial class AutomationEnvironmentManagementForm : Form
     private void ClearForm()
     {
         _selectedAutomationEnvironmentId = null;
-        txtAutomationID.Text = string.Empty;
+        cmbAutomation.SelectedIndex = 0;
         txtAppID.Text = string.Empty;
-        txtEnvironmentTypeID.Text = string.Empty;
+        cmbEnvironmentType.SelectedIndex = 0;
         btnUpdate.Enabled = false;
         btnDelete.Enabled = false;
     }
@@ -215,5 +255,12 @@ public partial class AutomationEnvironmentManagementForm : Form
             return result;
 
         return null;
+    }
+
+    private int? GetComboBoxValue(ComboBox combo)
+    {
+        if (combo.SelectedValue == null || (int)combo.SelectedValue == 0)
+            return null;
+        return (int)combo.SelectedValue;
     }
 }

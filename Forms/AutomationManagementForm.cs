@@ -6,12 +6,17 @@ namespace RpaAlmClient.Forms;
 public partial class AutomationManagementForm : Form
 {
     private readonly AutomationApiClient _automationApiClient;
+    private readonly SegmentApiClient _segmentApiClient;
+    private readonly RegionApiClient _regionApiClient;
+    private readonly FunctionApiClient _functionApiClient;
+    private readonly StatusApiClient _statusApiClient;
+
     private DataGridView dgvAutomations = null!;
     private TextBox txtName = null!;
-    private TextBox txtSegmentID = null!;
-    private TextBox txtRegionID = null!;
-    private TextBox txtFunctionID = null!;
-    private TextBox txtStatusID = null!;
+    private ComboBox cmbSegment = null!;
+    private ComboBox cmbRegion = null!;
+    private ComboBox cmbFunction = null!;
+    private ComboBox cmbStatus = null!;
     private TextBox txtBtoWWID = null!;
     private TextBox txtBoWWID = null!;
     private TextBox txtFcWWID = null!;
@@ -24,10 +29,10 @@ public partial class AutomationManagementForm : Form
     private Button btnDelete = null!;
     private Button btnRefresh = null!;
     private Label lblName = null!;
-    private Label lblSegmentID = null!;
-    private Label lblRegionID = null!;
-    private Label lblFunctionID = null!;
-    private Label lblStatusID = null!;
+    private Label lblSegment = null!;
+    private Label lblRegion = null!;
+    private Label lblFunction = null!;
+    private Label lblStatus = null!;
     private Label lblBtoWWID = null!;
     private Label lblBoWWID = null!;
     private Label lblFcWWID = null!;
@@ -40,7 +45,13 @@ public partial class AutomationManagementForm : Form
     public AutomationManagementForm()
     {
         _automationApiClient = new AutomationApiClient();
+        _segmentApiClient = new SegmentApiClient();
+        _regionApiClient = new RegionApiClient();
+        _functionApiClient = new FunctionApiClient();
+        _statusApiClient = new StatusApiClient();
+
         InitializeComponents();
+        _ = LoadLookupDataAsync();
         _ = LoadAutomationsAsync();
     }
 
@@ -63,59 +74,87 @@ public partial class AutomationManagementForm : Form
         };
         dgvAutomations.SelectionChanged += DgvAutomations_SelectionChanged;
 
-        // Labels and TextBoxes
+        // Labels and Controls
         int labelX = 680;
-        int textBoxX = 850;
+        int controlX = 850;
         int startY = 30;
         int yIncrement = 40;
         int currentY = startY;
 
         lblName = new Label { Text = "Name:", Location = new Point(labelX, currentY), Size = new Size(160, 23) };
-        txtName = new TextBox { Location = new Point(textBoxX, currentY), Size = new Size(220, 23), MaxLength = 255 };
+        txtName = new TextBox { Location = new Point(controlX, currentY), Size = new Size(220, 23), MaxLength = 255 };
         currentY += yIncrement;
 
-        lblSegmentID = new Label { Text = "SegmentID:", Location = new Point(labelX, currentY), Size = new Size(160, 23) };
-        txtSegmentID = new TextBox { Location = new Point(textBoxX, currentY), Size = new Size(220, 23) };
+        lblSegment = new Label { Text = "Segment:", Location = new Point(labelX, currentY), Size = new Size(160, 23) };
+        cmbSegment = new ComboBox
+        {
+            Location = new Point(controlX, currentY),
+            Size = new Size(220, 23),
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            DisplayMember = "Code",
+            ValueMember = "Id"
+        };
         currentY += yIncrement;
 
-        lblRegionID = new Label { Text = "RegionID:", Location = new Point(labelX, currentY), Size = new Size(160, 23) };
-        txtRegionID = new TextBox { Location = new Point(textBoxX, currentY), Size = new Size(220, 23) };
+        lblRegion = new Label { Text = "Region:", Location = new Point(labelX, currentY), Size = new Size(160, 23) };
+        cmbRegion = new ComboBox
+        {
+            Location = new Point(controlX, currentY),
+            Size = new Size(220, 23),
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            DisplayMember = "Code",
+            ValueMember = "Id"
+        };
         currentY += yIncrement;
 
-        lblFunctionID = new Label { Text = "FunctionID:", Location = new Point(labelX, currentY), Size = new Size(160, 23) };
-        txtFunctionID = new TextBox { Location = new Point(textBoxX, currentY), Size = new Size(220, 23) };
+        lblFunction = new Label { Text = "Function:", Location = new Point(labelX, currentY), Size = new Size(160, 23) };
+        cmbFunction = new ComboBox
+        {
+            Location = new Point(controlX, currentY),
+            Size = new Size(220, 23),
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            DisplayMember = "Code",
+            ValueMember = "Id"
+        };
         currentY += yIncrement;
 
-        lblStatusID = new Label { Text = "StatusID:", Location = new Point(labelX, currentY), Size = new Size(160, 23) };
-        txtStatusID = new TextBox { Location = new Point(textBoxX, currentY), Size = new Size(220, 23) };
+        lblStatus = new Label { Text = "Status:", Location = new Point(labelX, currentY), Size = new Size(160, 23) };
+        cmbStatus = new ComboBox
+        {
+            Location = new Point(controlX, currentY),
+            Size = new Size(220, 23),
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            DisplayMember = "Code",
+            ValueMember = "Id"
+        };
         currentY += yIncrement;
 
         lblBtoWWID = new Label { Text = "BtoWWID:", Location = new Point(labelX, currentY), Size = new Size(160, 23) };
-        txtBtoWWID = new TextBox { Location = new Point(textBoxX, currentY), Size = new Size(220, 23), MaxLength = 9 };
+        txtBtoWWID = new TextBox { Location = new Point(controlX, currentY), Size = new Size(220, 23), MaxLength = 9 };
         currentY += yIncrement;
 
         lblBoWWID = new Label { Text = "BoWWID:", Location = new Point(labelX, currentY), Size = new Size(160, 23) };
-        txtBoWWID = new TextBox { Location = new Point(textBoxX, currentY), Size = new Size(220, 23), MaxLength = 9 };
+        txtBoWWID = new TextBox { Location = new Point(controlX, currentY), Size = new Size(220, 23), MaxLength = 9 };
         currentY += yIncrement;
 
         lblFcWWID = new Label { Text = "FcWWID:", Location = new Point(labelX, currentY), Size = new Size(160, 23) };
-        txtFcWWID = new TextBox { Location = new Point(textBoxX, currentY), Size = new Size(220, 23), MaxLength = 9 };
+        txtFcWWID = new TextBox { Location = new Point(controlX, currentY), Size = new Size(220, 23), MaxLength = 9 };
         currentY += yIncrement;
 
         lblBuildZcode = new Label { Text = "BuildZcode:", Location = new Point(labelX, currentY), Size = new Size(160, 23) };
-        txtBuildZcode = new TextBox { Location = new Point(textBoxX, currentY), Size = new Size(220, 23), MaxLength = 10 };
+        txtBuildZcode = new TextBox { Location = new Point(controlX, currentY), Size = new Size(220, 23), MaxLength = 10 };
         currentY += yIncrement;
 
         lblBuildCostCenter = new Label { Text = "BuildCostCenter:", Location = new Point(labelX, currentY), Size = new Size(160, 23) };
-        txtBuildCostCenter = new TextBox { Location = new Point(textBoxX, currentY), Size = new Size(220, 23), MaxLength = 10 };
+        txtBuildCostCenter = new TextBox { Location = new Point(controlX, currentY), Size = new Size(220, 23), MaxLength = 10 };
         currentY += yIncrement;
 
         lblSseWWID = new Label { Text = "SseWWID:", Location = new Point(labelX, currentY), Size = new Size(160, 23) };
-        txtSseWWID = new TextBox { Location = new Point(textBoxX, currentY), Size = new Size(220, 23), MaxLength = 9 };
+        txtSseWWID = new TextBox { Location = new Point(controlX, currentY), Size = new Size(220, 23), MaxLength = 9 };
         currentY += yIncrement;
 
         lblLseWWID = new Label { Text = "LseWWID:", Location = new Point(labelX, currentY), Size = new Size(160, 23) };
-        txtLseWWID = new TextBox { Location = new Point(textBoxX, currentY), Size = new Size(220, 23), MaxLength = 9 };
+        txtLseWWID = new TextBox { Location = new Point(controlX, currentY), Size = new Size(220, 23), MaxLength = 9 };
         currentY += yIncrement;
 
         // Buttons
@@ -133,14 +172,40 @@ public partial class AutomationManagementForm : Form
         this.Controls.AddRange(new Control[]
         {
             dgvAutomations,
-            lblName, lblSegmentID, lblRegionID, lblFunctionID, lblStatusID,
+            lblName, lblSegment, lblRegion, lblFunction, lblStatus,
             lblBtoWWID, lblBoWWID, lblFcWWID, lblBuildZcode, lblBuildCostCenter,
             lblSseWWID, lblLseWWID,
-            txtName, txtSegmentID, txtRegionID, txtFunctionID, txtStatusID,
+            txtName, cmbSegment, cmbRegion, cmbFunction, cmbStatus,
             txtBtoWWID, txtBoWWID, txtFcWWID, txtBuildZcode, txtBuildCostCenter,
             txtSseWWID, txtLseWWID,
             btnAdd, btnUpdate, btnDelete, btnRefresh
         });
+    }
+
+    private async Task LoadLookupDataAsync()
+    {
+        try
+        {
+            var segments = await _segmentApiClient.GetAllAsync();
+            var regions = await _regionApiClient.GetAllAsync();
+            var functions = await _functionApiClient.GetAllAsync();
+            var statuses = await _statusApiClient.GetAllAsync();
+
+            // Add empty option at the beginning
+            segments.Insert(0, new SegmentDto { Id = 0, Code = "(None)" });
+            regions.Insert(0, new RegionDto { Id = 0, Code = "(None)" });
+            functions.Insert(0, new FunctionDto { Id = 0, Code = "(None)" });
+            statuses.Insert(0, new StatusDto { Id = 0, Code = "(None)" });
+
+            cmbSegment.DataSource = segments;
+            cmbRegion.DataSource = regions;
+            cmbFunction.DataSource = functions;
+            cmbStatus.DataSource = statuses;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error loading lookup data: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
     }
 
     private async Task LoadAutomationsAsync()
@@ -168,10 +233,10 @@ public partial class AutomationManagementForm : Form
             {
                 _selectedAutomationId = automation.Id;
                 txtName.Text = automation.Name ?? string.Empty;
-                txtSegmentID.Text = automation.SegmentID?.ToString() ?? string.Empty;
-                txtRegionID.Text = automation.RegionID?.ToString() ?? string.Empty;
-                txtFunctionID.Text = automation.FunctionID?.ToString() ?? string.Empty;
-                txtStatusID.Text = automation.StatusID?.ToString() ?? string.Empty;
+                cmbSegment.SelectedValue = automation.SegmentID ?? 0;
+                cmbRegion.SelectedValue = automation.RegionID ?? 0;
+                cmbFunction.SelectedValue = automation.FunctionID ?? 0;
+                cmbStatus.SelectedValue = automation.StatusID ?? 0;
                 txtBtoWWID.Text = automation.BtoWWID ?? string.Empty;
                 txtBoWWID.Text = automation.BoWWID ?? string.Empty;
                 txtFcWWID.Text = automation.FcWWID ?? string.Empty;
@@ -198,10 +263,10 @@ public partial class AutomationManagementForm : Form
             var request = new AutomationCreateRequest
             {
                 Name = txtName.Text.Trim(),
-                SegmentID = ParseNullableInt(txtSegmentID.Text),
-                RegionID = ParseNullableInt(txtRegionID.Text),
-                FunctionID = ParseNullableInt(txtFunctionID.Text),
-                StatusID = ParseNullableInt(txtStatusID.Text),
+                SegmentID = GetComboBoxValue(cmbSegment),
+                RegionID = GetComboBoxValue(cmbRegion),
+                FunctionID = GetComboBoxValue(cmbFunction),
+                StatusID = GetComboBoxValue(cmbStatus),
                 BtoWWID = string.IsNullOrWhiteSpace(txtBtoWWID.Text) ? null : txtBtoWWID.Text.Trim(),
                 BoWWID = string.IsNullOrWhiteSpace(txtBoWWID.Text) ? null : txtBoWWID.Text.Trim(),
                 FcWWID = string.IsNullOrWhiteSpace(txtFcWWID.Text) ? null : txtFcWWID.Text.Trim(),
@@ -240,10 +305,10 @@ public partial class AutomationManagementForm : Form
             var request = new AutomationUpdateRequest
             {
                 Name = txtName.Text.Trim(),
-                SegmentID = ParseNullableInt(txtSegmentID.Text),
-                RegionID = ParseNullableInt(txtRegionID.Text),
-                FunctionID = ParseNullableInt(txtFunctionID.Text),
-                StatusID = ParseNullableInt(txtStatusID.Text),
+                SegmentID = GetComboBoxValue(cmbSegment),
+                RegionID = GetComboBoxValue(cmbRegion),
+                FunctionID = GetComboBoxValue(cmbFunction),
+                StatusID = GetComboBoxValue(cmbStatus),
                 BtoWWID = string.IsNullOrWhiteSpace(txtBtoWWID.Text) ? null : txtBtoWWID.Text.Trim(),
                 BoWWID = string.IsNullOrWhiteSpace(txtBoWWID.Text) ? null : txtBoWWID.Text.Trim(),
                 FcWWID = string.IsNullOrWhiteSpace(txtFcWWID.Text) ? null : txtFcWWID.Text.Trim(),
@@ -297,10 +362,10 @@ public partial class AutomationManagementForm : Form
     {
         _selectedAutomationId = null;
         txtName.Text = string.Empty;
-        txtSegmentID.Text = string.Empty;
-        txtRegionID.Text = string.Empty;
-        txtFunctionID.Text = string.Empty;
-        txtStatusID.Text = string.Empty;
+        cmbSegment.SelectedIndex = 0;
+        cmbRegion.SelectedIndex = 0;
+        cmbFunction.SelectedIndex = 0;
+        cmbStatus.SelectedIndex = 0;
         txtBtoWWID.Text = string.Empty;
         txtBoWWID.Text = string.Empty;
         txtFcWWID.Text = string.Empty;
@@ -312,14 +377,10 @@ public partial class AutomationManagementForm : Form
         btnDelete.Enabled = false;
     }
 
-    private int? ParseNullableInt(string value)
+    private int? GetComboBoxValue(ComboBox combo)
     {
-        if (string.IsNullOrWhiteSpace(value))
+        if (combo.SelectedValue == null || (int)combo.SelectedValue == 0)
             return null;
-
-        if (int.TryParse(value.Trim(), out int result))
-            return result;
-
-        return null;
+        return (int)combo.SelectedValue;
     }
 }

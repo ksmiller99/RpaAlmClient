@@ -6,12 +6,13 @@ namespace RpaAlmClient.Forms;
 public partial class VirtualIdentityManagementForm : Form
 {
     private readonly VirtualIdentityApiClient _virtualIdentityApiClient;
+    private readonly ADDomainApiClient _adDomainApiClient;
     private DataGridView dgvVirtualIdentities = null!;
     private TextBox txtAccountName = null!;
     private TextBox txtHostName = null!;
     private TextBox txtWWID = null!;
     private TextBox txtIPv4 = null!;
-    private TextBox txtADDomainID = null!;
+    private ComboBox cmbADDomain = null!;
     private TextBox txtEmail = null!;
     private TextBox txtCreated = null!;
     private TextBox txtRetired = null!;
@@ -32,7 +33,10 @@ public partial class VirtualIdentityManagementForm : Form
     public VirtualIdentityManagementForm()
     {
         _virtualIdentityApiClient = new VirtualIdentityApiClient();
+        _adDomainApiClient = new ADDomainApiClient();
+
         InitializeComponents();
+        _ = LoadLookupDataAsync();
         _ = LoadVirtualIdentitiesAsync();
     }
 
@@ -78,8 +82,15 @@ public partial class VirtualIdentityManagementForm : Form
         txtIPv4 = new TextBox { Location = new Point(textBoxX, currentY), Size = new Size(240, 23), MaxLength = 15 };
         currentY += yIncrement;
 
-        lblADDomainID = new Label { Text = "ADDomainID:", Location = new Point(labelX, currentY), Size = new Size(130, 23) };
-        txtADDomainID = new TextBox { Location = new Point(textBoxX, currentY), Size = new Size(240, 23) };
+        lblADDomainID = new Label { Text = "AD Domain:", Location = new Point(labelX, currentY), Size = new Size(130, 23) };
+        cmbADDomain = new ComboBox
+        {
+            Location = new Point(textBoxX, currentY),
+            Size = new Size(240, 23),
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            DisplayMember = "Code",
+            ValueMember = "Id"
+        };
         currentY += yIncrement;
 
         lblEmail = new Label { Text = "Email:", Location = new Point(labelX, currentY), Size = new Size(130, 23) };
@@ -110,7 +121,7 @@ public partial class VirtualIdentityManagementForm : Form
         {
             dgvVirtualIdentities,
             lblAccountName, lblHostName, lblWWID, lblIPv4, lblADDomainID, lblEmail, lblCreated, lblRetired,
-            txtAccountName, txtHostName, txtWWID, txtIPv4, txtADDomainID, txtEmail, txtCreated, txtRetired,
+            txtAccountName, txtHostName, txtWWID, txtIPv4, cmbADDomain, txtEmail, txtCreated, txtRetired,
             btnAdd, btnUpdate, btnDelete, btnRefresh
         });
     }
@@ -129,6 +140,23 @@ public partial class VirtualIdentityManagementForm : Form
         }
     }
 
+    private async Task LoadLookupDataAsync()
+    {
+        try
+        {
+            var adDomains = await _adDomainApiClient.GetAllAsync();
+
+            // Add empty option at the beginning
+            adDomains.Insert(0, new ADDomainDto { Id = 0, Code = "(None)" });
+
+            cmbADDomain.DataSource = adDomains;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error loading lookup data: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
     private void DgvVirtualIdentities_SelectionChanged(object? sender, EventArgs e)
     {
         if (dgvVirtualIdentities.SelectedRows.Count > 0)
@@ -143,7 +171,7 @@ public partial class VirtualIdentityManagementForm : Form
                 txtHostName.Text = virtualIdentity.HostName ?? string.Empty;
                 txtWWID.Text = virtualIdentity.WWID ?? string.Empty;
                 txtIPv4.Text = virtualIdentity.IPv4 ?? string.Empty;
-                txtADDomainID.Text = virtualIdentity.ADDomainID?.ToString() ?? string.Empty;
+                cmbADDomain.SelectedValue = virtualIdentity.ADDomainID ?? 0;
                 txtEmail.Text = virtualIdentity.Email ?? string.Empty;
                 txtCreated.Text = virtualIdentity.Created?.ToString("yyyy-MM-dd") ?? string.Empty;
                 txtRetired.Text = virtualIdentity.Retired?.ToString("yyyy-MM-dd") ?? string.Empty;
@@ -163,7 +191,7 @@ public partial class VirtualIdentityManagementForm : Form
                 HostName = string.IsNullOrWhiteSpace(txtHostName.Text) ? null : txtHostName.Text.Trim(),
                 WWID = string.IsNullOrWhiteSpace(txtWWID.Text) ? null : txtWWID.Text.Trim(),
                 IPv4 = string.IsNullOrWhiteSpace(txtIPv4.Text) ? null : txtIPv4.Text.Trim(),
-                ADDomainID = ParseNullableInt(txtADDomainID.Text),
+                ADDomainID = GetComboBoxValue(cmbADDomain),
                 Email = string.IsNullOrWhiteSpace(txtEmail.Text) ? null : txtEmail.Text.Trim(),
                 Created = ParseNullableDateTime(txtCreated.Text),
                 Retired = ParseNullableDateTime(txtRetired.Text)
@@ -195,7 +223,7 @@ public partial class VirtualIdentityManagementForm : Form
                 HostName = string.IsNullOrWhiteSpace(txtHostName.Text) ? null : txtHostName.Text.Trim(),
                 WWID = string.IsNullOrWhiteSpace(txtWWID.Text) ? null : txtWWID.Text.Trim(),
                 IPv4 = string.IsNullOrWhiteSpace(txtIPv4.Text) ? null : txtIPv4.Text.Trim(),
-                ADDomainID = ParseNullableInt(txtADDomainID.Text),
+                ADDomainID = GetComboBoxValue(cmbADDomain),
                 Email = string.IsNullOrWhiteSpace(txtEmail.Text) ? null : txtEmail.Text.Trim(),
                 Created = ParseNullableDateTime(txtCreated.Text),
                 Retired = ParseNullableDateTime(txtRetired.Text)
@@ -248,7 +276,7 @@ public partial class VirtualIdentityManagementForm : Form
         txtHostName.Text = string.Empty;
         txtWWID.Text = string.Empty;
         txtIPv4.Text = string.Empty;
-        txtADDomainID.Text = string.Empty;
+        cmbADDomain.SelectedIndex = 0;
         txtEmail.Text = string.Empty;
         txtCreated.Text = string.Empty;
         txtRetired.Text = string.Empty;
@@ -276,5 +304,12 @@ public partial class VirtualIdentityManagementForm : Form
             return result;
 
         return null;
+    }
+
+    private int? GetComboBoxValue(ComboBox combo)
+    {
+        if (combo.SelectedValue == null || (int)combo.SelectedValue == 0)
+            return null;
+        return (int)combo.SelectedValue;
     }
 }

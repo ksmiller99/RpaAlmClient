@@ -6,9 +6,11 @@ namespace RpaAlmClient.Forms;
 public partial class ViAssignmentsManagementForm : Form
 {
     private readonly ViAssignmentsApiClient _viAssignmentsApiClient;
+    private readonly VirtualIdentityApiClient _virtualIdentityApiClient;
+    private readonly AutomationEnvironmentApiClient _automationEnvironmentApiClient;
     private DataGridView dgvViAssignments = null!;
-    private TextBox txtVirtualIdentityID = null!;
-    private TextBox txtAutomationEnvironmentID = null!;
+    private ComboBox cmbVirtualIdentity = null!;
+    private ComboBox cmbAutomationEnvironment = null!;
     private TextBox txtPercentage = null!;
     private TextBox txtStartDate = null!;
     private TextBox txtEndDate = null!;
@@ -26,7 +28,11 @@ public partial class ViAssignmentsManagementForm : Form
     public ViAssignmentsManagementForm()
     {
         _viAssignmentsApiClient = new ViAssignmentsApiClient();
+        _virtualIdentityApiClient = new VirtualIdentityApiClient();
+        _automationEnvironmentApiClient = new AutomationEnvironmentApiClient();
+
         InitializeComponents();
+        _ = LoadLookupDataAsync();
         _ = LoadViAssignmentsAsync();
     }
 
@@ -56,12 +62,26 @@ public partial class ViAssignmentsManagementForm : Form
         int yIncrement = 40;
         int currentY = startY;
 
-        lblVirtualIdentityID = new Label { Text = "VirtualIdentityID:", Location = new Point(labelX, currentY), Size = new Size(200, 23) };
-        txtVirtualIdentityID = new TextBox { Location = new Point(textBoxX, currentY), Size = new Size(180, 23) };
+        lblVirtualIdentityID = new Label { Text = "Virtual Identity:", Location = new Point(labelX, currentY), Size = new Size(200, 23) };
+        cmbVirtualIdentity = new ComboBox
+        {
+            Location = new Point(textBoxX, currentY),
+            Size = new Size(180, 23),
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            DisplayMember = "AccountName",
+            ValueMember = "Id"
+        };
         currentY += yIncrement;
 
-        lblAutomationEnvironmentID = new Label { Text = "AutomationEnvironmentID:", Location = new Point(labelX, currentY), Size = new Size(200, 23) };
-        txtAutomationEnvironmentID = new TextBox { Location = new Point(textBoxX, currentY), Size = new Size(180, 23) };
+        lblAutomationEnvironmentID = new Label { Text = "Automation Environment:", Location = new Point(labelX, currentY), Size = new Size(200, 23) };
+        cmbAutomationEnvironment = new ComboBox
+        {
+            Location = new Point(textBoxX, currentY),
+            Size = new Size(180, 23),
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            DisplayMember = "Id",
+            ValueMember = "Id"
+        };
         currentY += yIncrement;
 
         lblPercentage = new Label { Text = "Percentage:", Location = new Point(labelX, currentY), Size = new Size(200, 23) };
@@ -92,7 +112,7 @@ public partial class ViAssignmentsManagementForm : Form
         {
             dgvViAssignments,
             lblVirtualIdentityID, lblAutomationEnvironmentID, lblPercentage, lblStartDate, lblEndDate,
-            txtVirtualIdentityID, txtAutomationEnvironmentID, txtPercentage, txtStartDate, txtEndDate,
+            cmbVirtualIdentity, cmbAutomationEnvironment, txtPercentage, txtStartDate, txtEndDate,
             btnAdd, btnUpdate, btnDelete, btnRefresh
         });
     }
@@ -111,6 +131,26 @@ public partial class ViAssignmentsManagementForm : Form
         }
     }
 
+    private async Task LoadLookupDataAsync()
+    {
+        try
+        {
+            var virtualIdentities = await _virtualIdentityApiClient.GetAllAsync();
+            var automationEnvironments = await _automationEnvironmentApiClient.GetAllAsync();
+
+            // Add empty option at the beginning
+            virtualIdentities.Insert(0, new VirtualIdentityDto { Id = 0, AccountName = "(None)" });
+            automationEnvironments.Insert(0, new AutomationEnvironmentDto { Id = 0 });
+
+            cmbVirtualIdentity.DataSource = virtualIdentities;
+            cmbAutomationEnvironment.DataSource = automationEnvironments;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error loading lookup data: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
     private void DgvViAssignments_SelectionChanged(object? sender, EventArgs e)
     {
         if (dgvViAssignments.SelectedRows.Count > 0)
@@ -121,8 +161,8 @@ public partial class ViAssignmentsManagementForm : Form
             if (viAssignment != null)
             {
                 _selectedViAssignmentId = viAssignment.Id;
-                txtVirtualIdentityID.Text = viAssignment.VirtualIdentityID?.ToString() ?? string.Empty;
-                txtAutomationEnvironmentID.Text = viAssignment.AutomationEnvironmentID?.ToString() ?? string.Empty;
+                cmbVirtualIdentity.SelectedValue = viAssignment.VirtualIdentityID ?? 0;
+                cmbAutomationEnvironment.SelectedValue = viAssignment.AutomationEnvironmentID ?? 0;
                 txtPercentage.Text = viAssignment.Percentage?.ToString() ?? string.Empty;
                 txtStartDate.Text = viAssignment.StartDate?.ToString("yyyy-MM-dd") ?? string.Empty;
                 txtEndDate.Text = viAssignment.EndDate?.ToString("yyyy-MM-dd") ?? string.Empty;
@@ -138,8 +178,8 @@ public partial class ViAssignmentsManagementForm : Form
         {
             var request = new ViAssignmentsCreateRequest
             {
-                VirtualIdentityID = ParseNullableInt(txtVirtualIdentityID.Text),
-                AutomationEnvironmentID = ParseNullableInt(txtAutomationEnvironmentID.Text),
+                VirtualIdentityID = GetComboBoxValue(cmbVirtualIdentity),
+                AutomationEnvironmentID = GetComboBoxValue(cmbAutomationEnvironment),
                 Percentage = ParseNullableInt(txtPercentage.Text),
                 StartDate = ParseNullableDateTime(txtStartDate.Text),
                 EndDate = ParseNullableDateTime(txtEndDate.Text)
@@ -167,8 +207,8 @@ public partial class ViAssignmentsManagementForm : Form
 
             var request = new ViAssignmentsUpdateRequest
             {
-                VirtualIdentityID = ParseNullableInt(txtVirtualIdentityID.Text),
-                AutomationEnvironmentID = ParseNullableInt(txtAutomationEnvironmentID.Text),
+                VirtualIdentityID = GetComboBoxValue(cmbVirtualIdentity),
+                AutomationEnvironmentID = GetComboBoxValue(cmbAutomationEnvironment),
                 Percentage = ParseNullableInt(txtPercentage.Text),
                 StartDate = ParseNullableDateTime(txtStartDate.Text),
                 EndDate = ParseNullableDateTime(txtEndDate.Text)
@@ -217,8 +257,8 @@ public partial class ViAssignmentsManagementForm : Form
     private void ClearForm()
     {
         _selectedViAssignmentId = null;
-        txtVirtualIdentityID.Text = string.Empty;
-        txtAutomationEnvironmentID.Text = string.Empty;
+        cmbVirtualIdentity.SelectedIndex = 0;
+        cmbAutomationEnvironment.SelectedIndex = 0;
         txtPercentage.Text = string.Empty;
         txtStartDate.Text = string.Empty;
         txtEndDate.Text = string.Empty;
@@ -246,5 +286,12 @@ public partial class ViAssignmentsManagementForm : Form
             return result;
 
         return null;
+    }
+
+    private int? GetComboBoxValue(ComboBox combo)
+    {
+        if (combo.SelectedValue == null || (int)combo.SelectedValue == 0)
+            return null;
+        return (int)combo.SelectedValue;
     }
 }

@@ -6,13 +6,15 @@ namespace RpaAlmClient.Forms;
 public partial class EnhancementUserStoryManagementForm : Form
 {
     private readonly EnhancementUserStoryApiClient _enhancementUserStoryApiClient;
+    private readonly EnhancementApiClient _enhancementApiClient;
+    private readonly StoryPointCostApiClient _storyPointCostApiClient;
     private DataGridView dgvEnhancementUserStories = null!;
-    private TextBox txtEnhancementID = null!;
+    private ComboBox cmbEnhancement = null!;
     private TextBox txtJiraIssue = null!;
     private TextBox txtStoryPoints = null!;
     private TextBox txtJiraIssueLink = null!;
     private TextBox txtJiraIssueSummary = null!;
-    private TextBox txtStoryPointCostID = null!;
+    private ComboBox cmbStoryPointCost = null!;
     private Button btnAdd = null!;
     private Button btnUpdate = null!;
     private Button btnDelete = null!;
@@ -28,7 +30,11 @@ public partial class EnhancementUserStoryManagementForm : Form
     public EnhancementUserStoryManagementForm()
     {
         _enhancementUserStoryApiClient = new EnhancementUserStoryApiClient();
+        _enhancementApiClient = new EnhancementApiClient();
+        _storyPointCostApiClient = new StoryPointCostApiClient();
+
         InitializeComponents();
+        _ = LoadLookupDataAsync();
         _ = LoadEnhancementUserStoriesAsync();
     }
 
@@ -58,8 +64,15 @@ public partial class EnhancementUserStoryManagementForm : Form
         int yIncrement = 40;
         int currentY = startY;
 
-        lblEnhancementID = new Label { Text = "EnhancementID:", Location = new Point(labelX, currentY), Size = new Size(160, 23) };
-        txtEnhancementID = new TextBox { Location = new Point(textBoxX, currentY), Size = new Size(220, 23) };
+        lblEnhancementID = new Label { Text = "Enhancement:", Location = new Point(labelX, currentY), Size = new Size(160, 23) };
+        cmbEnhancement = new ComboBox
+        {
+            Location = new Point(textBoxX, currentY),
+            Size = new Size(220, 23),
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            DisplayMember = "Code",
+            ValueMember = "Id"
+        };
         currentY += yIncrement;
 
         lblJiraIssue = new Label { Text = "JiraIssue:", Location = new Point(labelX, currentY), Size = new Size(160, 23) };
@@ -78,8 +91,15 @@ public partial class EnhancementUserStoryManagementForm : Form
         txtJiraIssueSummary = new TextBox { Location = new Point(textBoxX, currentY), Size = new Size(220, 23), MaxLength = 255 };
         currentY += yIncrement;
 
-        lblStoryPointCostID = new Label { Text = "StoryPointCostID:", Location = new Point(labelX, currentY), Size = new Size(160, 23) };
-        txtStoryPointCostID = new TextBox { Location = new Point(textBoxX, currentY), Size = new Size(220, 23) };
+        lblStoryPointCostID = new Label { Text = "Story Point Cost:", Location = new Point(labelX, currentY), Size = new Size(160, 23) };
+        cmbStoryPointCost = new ComboBox
+        {
+            Location = new Point(textBoxX, currentY),
+            Size = new Size(220, 23),
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            DisplayMember = "Code",
+            ValueMember = "Id"
+        };
         currentY += yIncrement;
 
         // Buttons
@@ -98,7 +118,7 @@ public partial class EnhancementUserStoryManagementForm : Form
         {
             dgvEnhancementUserStories,
             lblEnhancementID, lblJiraIssue, lblStoryPoints, lblJiraIssueLink, lblJiraIssueSummary, lblStoryPointCostID,
-            txtEnhancementID, txtJiraIssue, txtStoryPoints, txtJiraIssueLink, txtJiraIssueSummary, txtStoryPointCostID,
+            cmbEnhancement, txtJiraIssue, txtStoryPoints, txtJiraIssueLink, txtJiraIssueSummary, cmbStoryPointCost,
             btnAdd, btnUpdate, btnDelete, btnRefresh
         });
     }
@@ -117,6 +137,26 @@ public partial class EnhancementUserStoryManagementForm : Form
         }
     }
 
+    private async Task LoadLookupDataAsync()
+    {
+        try
+        {
+            var enhancements = await _enhancementApiClient.GetAllAsync();
+            var storyPointCosts = await _storyPointCostApiClient.GetAllAsync();
+
+            // Add empty option at the beginning
+            enhancements.Insert(0, new EnhancementDto { Id = 0, Code = "(None)" });
+            storyPointCosts.Insert(0, new StoryPointCostDto { Id = 0, Code = "(None)" });
+
+            cmbEnhancement.DataSource = enhancements;
+            cmbStoryPointCost.DataSource = storyPointCosts;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error loading lookup data: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
     private void DgvEnhancementUserStories_SelectionChanged(object? sender, EventArgs e)
     {
         if (dgvEnhancementUserStories.SelectedRows.Count > 0)
@@ -127,12 +167,12 @@ public partial class EnhancementUserStoryManagementForm : Form
             if (enhancementUserStory != null)
             {
                 _selectedEnhancementUserStoryId = enhancementUserStory.Id;
-                txtEnhancementID.Text = enhancementUserStory.EnhancementID?.ToString() ?? string.Empty;
+                cmbEnhancement.SelectedValue = enhancementUserStory.EnhancementID ?? 0;
                 txtJiraIssue.Text = enhancementUserStory.JiraIssue ?? string.Empty;
                 txtStoryPoints.Text = enhancementUserStory.StoryPoints?.ToString() ?? string.Empty;
                 txtJiraIssueLink.Text = enhancementUserStory.JiraIssueLink ?? string.Empty;
                 txtJiraIssueSummary.Text = enhancementUserStory.JiraIssueSummary ?? string.Empty;
-                txtStoryPointCostID.Text = enhancementUserStory.StoryPointCostID?.ToString() ?? string.Empty;
+                cmbStoryPointCost.SelectedValue = enhancementUserStory.StoryPointCostID ?? 0;
                 btnUpdate.Enabled = true;
                 btnDelete.Enabled = true;
             }
@@ -145,12 +185,12 @@ public partial class EnhancementUserStoryManagementForm : Form
         {
             var request = new EnhancementUserStoryCreateRequest
             {
-                EnhancementID = ParseNullableInt(txtEnhancementID.Text),
+                EnhancementID = GetComboBoxValue(cmbEnhancement),
                 JiraIssue = string.IsNullOrWhiteSpace(txtJiraIssue.Text) ? null : txtJiraIssue.Text.Trim(),
                 StoryPoints = ParseNullableInt(txtStoryPoints.Text),
                 JiraIssueLink = string.IsNullOrWhiteSpace(txtJiraIssueLink.Text) ? null : txtJiraIssueLink.Text.Trim(),
                 JiraIssueSummary = string.IsNullOrWhiteSpace(txtJiraIssueSummary.Text) ? null : txtJiraIssueSummary.Text.Trim(),
-                StoryPointCostID = ParseNullableInt(txtStoryPointCostID.Text)
+                StoryPointCostID = GetComboBoxValue(cmbStoryPointCost)
             };
 
             await _enhancementUserStoryApiClient.CreateAsync(request);
@@ -175,12 +215,12 @@ public partial class EnhancementUserStoryManagementForm : Form
 
             var request = new EnhancementUserStoryUpdateRequest
             {
-                EnhancementID = ParseNullableInt(txtEnhancementID.Text),
+                EnhancementID = GetComboBoxValue(cmbEnhancement),
                 JiraIssue = string.IsNullOrWhiteSpace(txtJiraIssue.Text) ? null : txtJiraIssue.Text.Trim(),
                 StoryPoints = ParseNullableInt(txtStoryPoints.Text),
                 JiraIssueLink = string.IsNullOrWhiteSpace(txtJiraIssueLink.Text) ? null : txtJiraIssueLink.Text.Trim(),
                 JiraIssueSummary = string.IsNullOrWhiteSpace(txtJiraIssueSummary.Text) ? null : txtJiraIssueSummary.Text.Trim(),
-                StoryPointCostID = ParseNullableInt(txtStoryPointCostID.Text)
+                StoryPointCostID = GetComboBoxValue(cmbStoryPointCost)
             };
 
             await _enhancementUserStoryApiClient.UpdateAsync(_selectedEnhancementUserStoryId.Value, request);
@@ -226,12 +266,12 @@ public partial class EnhancementUserStoryManagementForm : Form
     private void ClearForm()
     {
         _selectedEnhancementUserStoryId = null;
-        txtEnhancementID.Text = string.Empty;
+        cmbEnhancement.SelectedIndex = 0;
         txtJiraIssue.Text = string.Empty;
         txtStoryPoints.Text = string.Empty;
         txtJiraIssueLink.Text = string.Empty;
         txtJiraIssueSummary.Text = string.Empty;
-        txtStoryPointCostID.Text = string.Empty;
+        cmbStoryPointCost.SelectedIndex = 0;
         btnUpdate.Enabled = false;
         btnDelete.Enabled = false;
     }
@@ -245,5 +285,12 @@ public partial class EnhancementUserStoryManagementForm : Form
             return result;
 
         return null;
+    }
+
+    private int? GetComboBoxValue(ComboBox combo)
+    {
+        if (combo.SelectedValue == null || (int)combo.SelectedValue == 0)
+            return null;
+        return (int)combo.SelectedValue;
     }
 }

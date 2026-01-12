@@ -6,10 +6,13 @@ namespace RpaAlmClient.Forms;
 public partial class SlaItemManagementForm : Form
 {
     private readonly SlaItemApiClient _slaItemApiClient;
+    private readonly SlaMasterApiClient _slaMasterApiClient;
+    private readonly SlaItemTypeApiClient _slaItemTypeApiClient;
+    private readonly EnhancementApiClient _enhancementApiClient;
     private DataGridView dgvSlaItems = null!;
-    private TextBox txtSlaMasterID = null!;
-    private TextBox txtSlaItemTypeID = null!;
-    private TextBox txtEnhancementID = null!;
+    private ComboBox cmbSlaMaster = null!;
+    private ComboBox cmbSlaItemType = null!;
+    private ComboBox cmbEnhancement = null!;
     private Button btnAdd = null!;
     private Button btnUpdate = null!;
     private Button btnDelete = null!;
@@ -22,7 +25,12 @@ public partial class SlaItemManagementForm : Form
     public SlaItemManagementForm()
     {
         _slaItemApiClient = new SlaItemApiClient();
+        _slaMasterApiClient = new SlaMasterApiClient();
+        _slaItemTypeApiClient = new SlaItemTypeApiClient();
+        _enhancementApiClient = new EnhancementApiClient();
+
         InitializeComponents();
+        _ = LoadLookupDataAsync();
         _ = LoadSlaItemsAsync();
     }
 
@@ -52,16 +60,37 @@ public partial class SlaItemManagementForm : Form
         int yIncrement = 40;
         int currentY = startY;
 
-        lblSlaMasterID = new Label { Text = "SlaMasterID:", Location = new Point(labelX, currentY), Size = new Size(130, 23) };
-        txtSlaMasterID = new TextBox { Location = new Point(textBoxX, currentY), Size = new Size(150, 23) };
+        lblSlaMasterID = new Label { Text = "SLA Master:", Location = new Point(labelX, currentY), Size = new Size(130, 23) };
+        cmbSlaMaster = new ComboBox
+        {
+            Location = new Point(textBoxX, currentY),
+            Size = new Size(150, 23),
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            DisplayMember = "Id",
+            ValueMember = "Id"
+        };
         currentY += yIncrement;
 
-        lblSlaItemTypeID = new Label { Text = "SlaItemTypeID:", Location = new Point(labelX, currentY), Size = new Size(130, 23) };
-        txtSlaItemTypeID = new TextBox { Location = new Point(textBoxX, currentY), Size = new Size(150, 23) };
+        lblSlaItemTypeID = new Label { Text = "Item Type:", Location = new Point(labelX, currentY), Size = new Size(130, 23) };
+        cmbSlaItemType = new ComboBox
+        {
+            Location = new Point(textBoxX, currentY),
+            Size = new Size(150, 23),
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            DisplayMember = "Code",
+            ValueMember = "Id"
+        };
         currentY += yIncrement;
 
-        lblEnhancementID = new Label { Text = "EnhancementID:", Location = new Point(labelX, currentY), Size = new Size(130, 23) };
-        txtEnhancementID = new TextBox { Location = new Point(textBoxX, currentY), Size = new Size(150, 23) };
+        lblEnhancementID = new Label { Text = "Enhancement:", Location = new Point(labelX, currentY), Size = new Size(130, 23) };
+        cmbEnhancement = new ComboBox
+        {
+            Location = new Point(textBoxX, currentY),
+            Size = new Size(150, 23),
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            DisplayMember = "Code",
+            ValueMember = "Id"
+        };
         currentY += yIncrement;
 
         // Buttons
@@ -80,7 +109,7 @@ public partial class SlaItemManagementForm : Form
         {
             dgvSlaItems,
             lblSlaMasterID, lblSlaItemTypeID, lblEnhancementID,
-            txtSlaMasterID, txtSlaItemTypeID, txtEnhancementID,
+            cmbSlaMaster, cmbSlaItemType, cmbEnhancement,
             btnAdd, btnUpdate, btnDelete, btnRefresh
         });
     }
@@ -99,6 +128,29 @@ public partial class SlaItemManagementForm : Form
         }
     }
 
+    private async Task LoadLookupDataAsync()
+    {
+        try
+        {
+            var slaMasters = await _slaMasterApiClient.GetAllAsync();
+            var slaItemTypes = await _slaItemTypeApiClient.GetAllAsync();
+            var enhancements = await _enhancementApiClient.GetAllAsync();
+
+            // Add empty option at the beginning
+            slaMasters.Insert(0, new SlaMasterDto { Id = 0 });
+            slaItemTypes.Insert(0, new SlaItemTypeDto { Id = 0, Code = "(None)" });
+            enhancements.Insert(0, new EnhancementDto { Id = 0, Code = "(None)" });
+
+            cmbSlaMaster.DataSource = slaMasters;
+            cmbSlaItemType.DataSource = slaItemTypes;
+            cmbEnhancement.DataSource = enhancements;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error loading lookup data: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
     private void DgvSlaItems_SelectionChanged(object? sender, EventArgs e)
     {
         if (dgvSlaItems.SelectedRows.Count > 0)
@@ -109,9 +161,9 @@ public partial class SlaItemManagementForm : Form
             if (slaItem != null)
             {
                 _selectedSlaItemId = slaItem.Id;
-                txtSlaMasterID.Text = slaItem.SlaMasterID?.ToString() ?? string.Empty;
-                txtSlaItemTypeID.Text = slaItem.SlaItemTypeID?.ToString() ?? string.Empty;
-                txtEnhancementID.Text = slaItem.EnhancementID?.ToString() ?? string.Empty;
+                cmbSlaMaster.SelectedValue = slaItem.SlaMasterID ?? 0;
+                cmbSlaItemType.SelectedValue = slaItem.SlaItemTypeID ?? 0;
+                cmbEnhancement.SelectedValue = slaItem.EnhancementID ?? 0;
                 btnUpdate.Enabled = true;
                 btnDelete.Enabled = true;
             }
@@ -124,9 +176,9 @@ public partial class SlaItemManagementForm : Form
         {
             var request = new SlaItemCreateRequest
             {
-                SlaMasterID = ParseNullableInt(txtSlaMasterID.Text),
-                SlaItemTypeID = ParseNullableInt(txtSlaItemTypeID.Text),
-                EnhancementID = ParseNullableInt(txtEnhancementID.Text)
+                SlaMasterID = GetComboBoxValue(cmbSlaMaster),
+                SlaItemTypeID = GetComboBoxValue(cmbSlaItemType),
+                EnhancementID = GetComboBoxValue(cmbEnhancement)
             };
 
             await _slaItemApiClient.CreateAsync(request);
@@ -151,9 +203,9 @@ public partial class SlaItemManagementForm : Form
 
             var request = new SlaItemUpdateRequest
             {
-                SlaMasterID = ParseNullableInt(txtSlaMasterID.Text),
-                SlaItemTypeID = ParseNullableInt(txtSlaItemTypeID.Text),
-                EnhancementID = ParseNullableInt(txtEnhancementID.Text)
+                SlaMasterID = GetComboBoxValue(cmbSlaMaster),
+                SlaItemTypeID = GetComboBoxValue(cmbSlaItemType),
+                EnhancementID = GetComboBoxValue(cmbEnhancement)
             };
 
             await _slaItemApiClient.UpdateAsync(_selectedSlaItemId.Value, request);
@@ -199,9 +251,9 @@ public partial class SlaItemManagementForm : Form
     private void ClearForm()
     {
         _selectedSlaItemId = null;
-        txtSlaMasterID.Text = string.Empty;
-        txtSlaItemTypeID.Text = string.Empty;
-        txtEnhancementID.Text = string.Empty;
+        cmbSlaMaster.SelectedIndex = 0;
+        cmbSlaItemType.SelectedIndex = 0;
+        cmbEnhancement.SelectedIndex = 0;
         btnUpdate.Enabled = false;
         btnDelete.Enabled = false;
     }
@@ -215,5 +267,12 @@ public partial class SlaItemManagementForm : Form
             return result;
 
         return null;
+    }
+
+    private int? GetComboBoxValue(ComboBox combo)
+    {
+        if (combo.SelectedValue == null || (int)combo.SelectedValue == 0)
+            return null;
+        return (int)combo.SelectedValue;
     }
 }
