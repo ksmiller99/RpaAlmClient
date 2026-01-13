@@ -51,7 +51,7 @@ A Windows Forms desktop client application for managing RPA (Robotic Process Aut
 
 3. **Configure the API endpoint**
 
-   Edit `appsettings.json` to point to your RPA ALM API server:
+   Edit `src/RpaAlm.Client.WinForms/appsettings.json` to point to your RPA ALM API server:
    ```json
    {
      "ApiSettings": {
@@ -67,12 +67,7 @@ A Windows Forms desktop client application for managing RPA (Robotic Process Aut
 
 5. **Run the application**
    ```bash
-   dotnet run
-   ```
-
-   Or use the startup script:
-   ```bash
-   StartClaudeAlmClient.bat
+   dotnet run --project src/RpaAlm.Client.WinForms/RpaAlm.Client.WinForms.csproj
    ```
 
 ## Configuration
@@ -91,32 +86,45 @@ The configuration system includes:
 
 ## Project Structure
 
+This project uses a **monorepo structure** with multiple .NET projects organized for code reusability:
+
 ```
 RpaAlmClient/
-├── Configuration/
-│   └── AppConfig.cs              # Configuration management with validation
-├── Forms/
-│   ├── MainMenuForm.cs           # Main navigation menu
-│   ├── *ManagementForm.cs        # 22 entity management forms (Status, Automation, etc.)
-│   └── ...
-├── Models/
-│   ├── *Dto.cs                   # 22 entity DTOs (data transfer objects)
-│   ├── *CreateRequest.cs         # 22 create request models
-│   ├── *UpdateRequest.cs         # 22 update request models
-│   └── ApiResponse.cs            # API response wrapper
-├── Services/
-│   ├── ApiClient.cs              # Generic HTTP client base class
-│   ├── *ApiClient.cs             # 22 entity-specific API clients
-│   └── ...
-├── Program.cs                    # Application entry point
-├── appsettings.json              # Configuration file
-└── README.md
+├── RpaAlmClient.sln                         # Solution file
+├── README.md, CLAUDE.md, .gitignore
+│
+└── src/
+    ├── RpaAlm.Shared/                       # Shared Libraries
+    │   ├── RpaAlm.Shared.Models/           # Data models (67 classes)
+    │   │   ├── DTOs/                        # 22 entity DTOs
+    │   │   ├── Requests/Create/             # 22 create request models
+    │   │   ├── Requests/Update/             # 22 update request models
+    │   │   └── Responses/                   # ApiResponse wrapper
+    │   │
+    │   ├── RpaAlm.Shared.ApiClient/        # API clients (23 classes)
+    │   │   ├── Core/                        # ApiClient base class
+    │   │   └── Clients/                     # 22 entity-specific API clients
+    │   │
+    │   └── RpaAlm.Shared.Configuration/    # Configuration management
+    │       └── AppConfig.cs                 # With validation & error handling
+    │
+    └── RpaAlm.Client.WinForms/             # Windows Forms Application
+        ├── Program.cs                       # Application entry point
+        ├── appsettings.json                 # Configuration file
+        └── Forms/                           # 23 form classes
+            ├── MainMenuForm.cs              # Main navigation menu
+            └── *ManagementForm.cs           # 22 entity management forms
 ```
 
-**Statistics:**
+**Solution Organization:**
+- **4 Projects** - 3 shared libraries + 1 Windows Forms client
+- **Shared Libraries** - Models, ApiClient, Configuration (reusable across platforms)
+- **Applications** - WinForms client (future: Web, Mobile, Console clients)
+
+**Project Statistics:**
+- 67 Model classes (22 DTOs + 22 CreateRequests + 22 UpdateRequests + 1 ApiResponse)
+- 23 API Client services (1 base + 22 entity-specific)
 - 23 Forms (22 entity forms + 1 main menu)
-- 66 Model classes (22 DTOs + 22 CreateRequests + 22 UpdateRequests)
-- 22 API Client services
 - Full CRUD operations for all entities
 
 ## Technologies Used
@@ -126,6 +134,20 @@ RpaAlmClient/
 - **System.Text.Json** - JSON serialization
 - **HttpClient** - HTTP communication
 - **Microsoft.Extensions.Configuration** - Configuration management
+
+## Monorepo Benefits
+
+The multi-project monorepo structure provides:
+
+1. **Code Reusability** - Shared libraries (Models, ApiClient, Configuration) can be referenced by multiple client applications
+2. **Platform Independence** - Shared libraries target `net9.0` (not Windows-specific), enabling cross-platform clients
+3. **Single Source of Truth** - All models and API logic maintained in one place
+4. **Future Extensibility** - Easy to add new client platforms:
+   - `RpaAlm.Client.Web` - Blazor or ASP.NET Core web application
+   - `RpaAlm.Client.Mobile` - MAUI cross-platform mobile app
+   - `RpaAlm.Client.Console` - CLI tool for automation
+5. **Maintainability** - Changes to models or API clients automatically propagate to all consumers
+6. **Testability** - Each project can have dedicated test projects
 
 ## Database Schema
 
@@ -188,25 +210,44 @@ dotnet test
 
 ### Code Structure
 
-- Follow existing patterns for adding new entity management forms
+**For adding new entities:**
+1. Add DTOs to `RpaAlm.Shared.Models/DTOs/`
+2. Add CreateRequest/UpdateRequest to `RpaAlm.Shared.Models/Requests/`
+3. Add API client to `RpaAlm.Shared.ApiClient/Clients/` (follow `StatusApiClient` pattern)
+4. Add management form to `RpaAlm.Client.WinForms/Forms/`
+5. Update `MainMenuForm` to add navigation button
+
+**For adding new client applications:**
+1. Create new project under `src/` (e.g., `RpaAlm.Client.Web`)
+2. Add project references to shared libraries
+3. Implement UI using chosen framework
+4. All models and API clients are already available
+
+**Best Practices:**
 - Use the `ApiClient` base class for HTTP communication
-- Extend `StatusApiClient` pattern for new entity-specific clients
 - All configuration should go through `AppConfig` class
+- Follow existing namespace conventions
+- Maintain separation between shared libraries and applications
 
 ## Troubleshooting
 
 ### "Configuration file not found" error
-- Ensure `appsettings.json` exists in the application directory
-- Check that the file is set to copy to output directory in the `.csproj` file
+- Ensure `src/RpaAlm.Client.WinForms/appsettings.json` exists
+- Check that the file is set to copy to output directory in the `.csproj` file (`<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>`)
 
 ### "API Base URL is not configured" error
-- Verify `appsettings.json` contains the `ApiSettings:BaseUrl` setting
+- Verify `src/RpaAlm.Client.WinForms/appsettings.json` contains the `ApiSettings:BaseUrl` setting
 - Ensure the URL is not empty
 
 ### API Connection errors
-- Verify the API server is running on the configured port
+- Verify the API server is running on the configured port (default: http://localhost:5021)
 - Check the `BaseUrl` in `appsettings.json` matches the API server URL
 - Ensure no firewall is blocking the connection
+
+### Build errors after cloning
+- Run `dotnet restore` at the solution level
+- Ensure all project references are correctly resolved
+- Check that all 4 projects are included in the solution file
 
 ## Contributing
 

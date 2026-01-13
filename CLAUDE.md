@@ -4,7 +4,30 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is an RPA (Robotic Process Automation) Application Lifecycle Management database project. It manages automation workflows, SLA tracking, virtual identities, and enhancement/user story tracking for an enterprise RPA platform.
+This is an RPA (Robotic Process Automation) Application Lifecycle Management client application. It provides a Windows Forms desktop interface for managing automation workflows, SLA tracking, virtual identities, and enhancement/user story tracking for an enterprise RPA platform.
+
+**Architecture**: Multi-project monorepo with 4 .NET 9.0 projects:
+- **RpaAlm.Shared.Models** - Data models (67 classes: DTOs, requests, responses)
+- **RpaAlm.Shared.ApiClient** - HTTP API clients (23 classes)
+- **RpaAlm.Shared.Configuration** - Configuration management
+- **RpaAlm.Client.WinForms** - Windows Forms application (23 forms)
+
+## Project Structure
+
+```
+src/
+├── RpaAlm.Shared/
+│   ├── RpaAlm.Shared.Models/           # Models in DTOs/, Requests/, Responses/
+│   ├── RpaAlm.Shared.ApiClient/        # API clients in Core/, Clients/
+│   └── RpaAlm.Shared.Configuration/    # AppConfig.cs
+└── RpaAlm.Client.WinForms/             # Program.cs, Forms/, appsettings.json
+```
+
+**Key File Locations:**
+- Models: `src/RpaAlm.Shared/RpaAlm.Shared.Models/DTOs/*.cs`
+- API Clients: `src/RpaAlm.Shared/RpaAlm.Shared.ApiClient/Clients/*ApiClient.cs`
+- Forms: `src/RpaAlm.Client.WinForms/Forms/*ManagementForm.cs`
+- Config: `src/RpaAlm.Client.WinForms/appsettings.json`
 
 ## Database
 
@@ -41,11 +64,14 @@ The database follows a normalized design with three table categories:
 ## Commands
 
 ```bash
-# Start Claude Code in this directory
-StartClaudeAlm.bat
+# Build entire solution
+dotnet build RpaAlmClient.sln
 
-# Run the database creation script against SQL Server
-sqlcmd -S localhost\SQLEXPRESS01 -E -i RpaDataDev.sql
+# Run the Windows Forms application
+dotnet run --project src/RpaAlm.Client.WinForms/RpaAlm.Client.WinForms.csproj
+
+# Build a specific project
+dotnet build src/RpaAlm.Shared/RpaAlm.Shared.Models/RpaAlm.Shared.Models.csproj
 ```
 
 ## Rules

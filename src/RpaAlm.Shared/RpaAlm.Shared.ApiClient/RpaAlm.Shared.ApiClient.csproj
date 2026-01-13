@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>RpaAlm.Shared.ApiClient</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\RpaAlm.Shared.Models\RpaAlm.Shared.Models.csproj" />
+    <ProjectReference Include="..\RpaAlm.Shared.Configuration\RpaAlm.Shared.Configuration.csproj" />
+  </ItemGroup>
+</Project>
