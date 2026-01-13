@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RpaAlm.Shared.ApiClient", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RpaAlm.Client.WinForms", "src\RpaAlm.Client.WinForms\RpaAlm.Client.WinForms.csproj", "{92DED746-6160-4E03-89CF-389BDE67019B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RpaAlm.Client.BlazorServer", "src\RpaAlm.Client.BlazorServer\RpaAlm.Client.BlazorServer.csproj", "{F1FBEB53-C4E4-4906-A4A7-E7C735FD1256}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,18 @@ Global
 		{92DED746-6160-4E03-89CF-389BDE67019B}.Release|x64.Build.0 = Release|Any CPU
 		{92DED746-6160-4E03-89CF-389BDE67019B}.Release|x86.ActiveCfg = Release|Any CPU
 		{92DED746-6160-4E03-89CF-389BDE67019B}.Release|x86.Build.0 = Release|Any CPU
+		{F1FBEB53-C4E4-4906-A4A7-E7C735FD1256}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1FBEB53-C4E4-4906-A4A7-E7C735FD1256}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1FBEB53-C4E4-4906-A4A7-E7C735FD1256}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F1FBEB53-C4E4-4906-A4A7-E7C735FD1256}.Debug|x64.Build.0 = Debug|Any CPU
+		{F1FBEB53-C4E4-4906-A4A7-E7C735FD1256}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F1FBEB53-C4E4-4906-A4A7-E7C735FD1256}.Debug|x86.Build.0 = Debug|Any CPU
+		{F1FBEB53-C4E4-4906-A4A7-E7C735FD1256}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1FBEB53-C4E4-4906-A4A7-E7C735FD1256}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1FBEB53-C4E4-4906-A4A7-E7C735FD1256}.Release|x64.ActiveCfg = Release|Any CPU
+		{F1FBEB53-C4E4-4906-A4A7-E7C735FD1256}.Release|x64.Build.0 = Release|Any CPU
+		{F1FBEB53-C4E4-4906-A4A7-E7C735FD1256}.Release|x86.ActiveCfg = Release|Any CPU
+		{F1FBEB53-C4E4-4906-A4A7-E7C735FD1256}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -83,5 +97,6 @@ Global
 		{356FCE8E-8700-48CF-A9B7-5999895EC614} = {4A969D05-427F-8E17-A227-CE49EE4500D9}
 		{52496F49-16AD-40EF-AB57-E75444062F3D} = {4A969D05-427F-8E17-A227-CE49EE4500D9}
 		{92DED746-6160-4E03-89CF-389BDE67019B} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{F1FBEB53-C4E4-4906-A4A7-E7C735FD1256} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 	EndGlobalSection
 EndGlobal

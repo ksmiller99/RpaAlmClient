@@ -1,0 +1,233 @@
+@page "/jjedshelper"
+@rendermode InteractiveServer
+@inject JjedsHelperApiClient ApiClient
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<PageTitle>JJEDS Helper Management</PageTitle>
+
+<MudText Typo="Typo.h4" Class="mb-4">JJEDS Helper Management</MudText>
+
+<MudGrid>
+    <MudItem xs="12" md="8">
+        <MudPaper Elevation="2">
+            <MudDataGrid T="JjedsHelperDto" Items="@entities" Dense="true" Hover="true"
+                         Loading="@loading" RowClick="@OnRowClick" SelectedItemChanged="@OnRowSelected">
+                <Columns>
+                    <PropertyColumn Property="x => x.Wwid" Title="WWID" />
+                    <PropertyColumn Property="x => x.CommonName" Title="Common Name" />
+                    <PropertyColumn Property="x => x.Email" Title="Email" />
+                    <PropertyColumn Property="x => x.JjedsCreated" Title="Created" Format="yyyy-MM-dd" />
+                    <PropertyColumn Property="x => x.JjedsLastChanged" Title="Last Changed" Format="yyyy-MM-dd" />
+                </Columns>
+            </MudDataGrid>
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="12" md="4">
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudText Typo="Typo.h6" Class="mb-4">@(isEditing ? "Edit JJEDS Helper" : "Add New JJEDS Helper")</MudText>
+
+            <EditForm Model="@currentEntity" OnValidSubmit="HandleSubmit">
+                <MudTextField @bind-Value="currentEntity.Wwid"
+                              Label="WWID (9 digits)"
+                              Required="true"
+                              MaxLength="9"
+                              Disabled="@isEditing"
+                              Margin="Margin.Dense"
+                              Class="mb-3" />
+
+                <MudTextField @bind-Value="currentEntity.CommonName"
+                              Label="Common Name"
+                              MaxLength="255"
+                              Margin="Margin.Dense"
+                              Class="mb-3" />
+
+                <MudTextField @bind-Value="currentEntity.Email"
+                              Label="Email"
+                              InputType="InputType.Email"
+                              MaxLength="255"
+                              Margin="Margin.Dense"
+                              Class="mb-3" />
+
+                <MudDatePicker @bind-Date="jjedsCreatedDate"
+                               Label="JJEDS Created"
+                               Margin="Margin.Dense"
+                               Class="mb-3" />
+
+                <MudDatePicker @bind-Date="jjedsLastChangedDate"
+                               Label="JJEDS Last Changed"
+                               Margin="Margin.Dense"
+                               Class="mb-4" />
+
+                <MudStack Row="true" Spacing="2" Class="mt-4">
+                    <MudButton ButtonType="ButtonType.Submit"
+                               Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               StartIcon="@(isEditing ? Icons.Material.Filled.Save : Icons.Material.Filled.Add)">
+                        @(isEditing ? "Update" : "Add")
+                    </MudButton>
+                    <MudButton OnClick="ClearForm"
+                               Variant="Variant.Outlined"
+                               Color="Color.Secondary"
+                               StartIcon="@Icons.Material.Filled.Clear">
+                        Clear
+                    </MudButton>
+                    <MudButton OnClick="HandleDelete"
+                               Variant="Variant.Filled"
+                               Color="Color.Error"
+                               Disabled="@(!isEditing)"
+                               StartIcon="@Icons.Material.Filled.Delete">
+                        Delete
+                    </MudButton>
+                </MudStack>
+            </EditForm>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private List<JjedsHelperDto> entities = new();
+    private JjedsHelperDto currentEntity = new();
+    private string? selectedWwid;
+    private bool isEditing => !string.IsNullOrEmpty(selectedWwid);
+    private bool loading;
+    private DateTime? jjedsCreatedDate;
+    private DateTime? jjedsLastChangedDate;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadEntitiesAsync();
+    }
+
+    private async Task LoadEntitiesAsync()
+    {
+        loading = true;
+        try
+        {
+            entities = await ApiClient.GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading data: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private void OnRowClick(DataGridRowClickEventArgs<JjedsHelperDto> args)
+    {
+        // Row selection handled by SelectedItemChanged
+    }
+
+    private void OnRowSelected(JjedsHelperDto? selected)
+    {
+        if (selected != null)
+        {
+            selectedWwid = selected.Wwid;
+            currentEntity = new JjedsHelperDto
+            {
+                Wwid = selected.Wwid,
+                CommonName = selected.CommonName,
+                Email = selected.Email,
+                JjedsCreated = selected.JjedsCreated,
+                JjedsLastChanged = selected.JjedsLastChanged
+            };
+            jjedsCreatedDate = selected.JjedsCreated;
+            jjedsLastChangedDate = selected.JjedsLastChanged;
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            // Sync date picker values back to entity
+            currentEntity.JjedsCreated = jjedsCreatedDate;
+            currentEntity.JjedsLastChanged = jjedsLastChangedDate;
+
+            if (isEditing)
+            {
+                // Parse Wwid as int for API call (Wwid is a 9-digit numeric string)
+                if (int.TryParse(selectedWwid, out int wwidAsInt))
+                {
+                    var request = new JjedsHelperUpdateRequest
+                    {
+                        CommonName = currentEntity.CommonName?.Trim(),
+                        Email = currentEntity.Email?.Trim(),
+                        JjedsCreated = currentEntity.JjedsCreated,
+                        JjedsLastChanged = currentEntity.JjedsLastChanged
+                    };
+                    await ApiClient.UpdateAsync(wwidAsInt, request);
+                    Snackbar.Add("JJEDS Helper updated successfully", Severity.Success);
+                }
+                else
+                {
+                    Snackbar.Add("Error: WWID must be numeric", Severity.Error);
+                    return;
+                }
+            }
+            else
+            {
+                var request = new JjedsHelperCreateRequest
+                {
+                    Wwid = currentEntity.Wwid?.Trim() ?? string.Empty,
+                    CommonName = currentEntity.CommonName?.Trim(),
+                    Email = currentEntity.Email?.Trim(),
+                    JjedsCreated = currentEntity.JjedsCreated,
+                    JjedsLastChanged = currentEntity.JjedsLastChanged
+                };
+                await ApiClient.CreateAsync(request);
+                Snackbar.Add("JJEDS Helper created successfully", Severity.Success);
+            }
+
+            await LoadEntitiesAsync();
+            ClearForm();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task HandleDelete()
+    {
+        bool? confirm = await DialogService.ShowMessageBox(
+            "Confirm Delete",
+            "Are you sure you want to delete this JJEDS helper?",
+            yesText: "Delete", cancelText: "Cancel");
+
+        if (confirm == true)
+        {
+            try
+            {
+                // Parse Wwid as int for API call
+                if (int.TryParse(selectedWwid, out int wwidAsInt))
+                {
+                    await ApiClient.DeleteAsync(wwidAsInt);
+                    Snackbar.Add("JJEDS Helper deleted successfully", Severity.Success);
+                    await LoadEntitiesAsync();
+                    ClearForm();
+                }
+                else
+                {
+                    Snackbar.Add("Error: WWID must be numeric", Severity.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+
+    private void ClearForm()
+    {
+        selectedWwid = null;
+        currentEntity = new JjedsHelperDto();
+        jjedsCreatedDate = null;
+        jjedsLastChangedDate = null;
+    }
+}
