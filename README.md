@@ -31,7 +31,7 @@ A Windows Forms desktop client application for managing RPA (Robotic Process Aut
 
 ## Prerequisites
 
-- [.NET 8.0](https://dotnet.microsoft.com/download/dotnet/8.0) or later
+- [.NET 9.0](https://dotnet.microsoft.com/download/dotnet/9.0) or later
 - Windows OS
 - [RPA ALM API](https://github.com/ksmiller99/ALM) server running (backend)
 - SQL Server Express (for the API backend)
@@ -121,7 +121,7 @@ RpaAlmClient/
 
 ## Technologies Used
 
-- **.NET 8.0** - Target framework
+- **.NET 9.0** - Target framework
 - **Windows Forms** - Desktop UI framework
 - **System.Text.Json** - JSON serialization
 - **HttpClient** - HTTP communication

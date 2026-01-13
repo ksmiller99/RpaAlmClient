@@ -36,7 +36,7 @@ public static class AppConfig
 
     private static void LoadConfiguration()
     {
-        var basePath = AppDomain.CurrentDomain.BaseDirectory;
+        var basePath = AppContext.BaseDirectory;
         var configPath = Path.Combine(basePath, "appsettings.json");
 
         if (!File.Exists(configPath))
