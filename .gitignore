@@ -74,3 +74,6 @@ $RECYCLE.BIN/
 .vscode/
 .idea/
 *.sln.iml
+
+# Claude Code temp files
+tmpclaude-*-cwd
