@@ -4,7 +4,7 @@
 @inject SegmentApiClient SegmentApiClient
 @inject RegionApiClient RegionApiClient
 @inject FunctionApiClient FunctionApiClient
-@inject StatusApiClient StatusApiClient
+@inject RpaStatusApiClient RpaStatusApiClient
 @inject JjedsHelperApiClient JjedsHelperApiClient
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
@@ -195,7 +195,7 @@
     private List<SegmentDto> segments = new();
     private List<RegionDto> regions = new();
     private List<FunctionDto> functions = new();
-    private List<StatusDto> statuses = new();
+    private List<RpaStatusDto> statuses = new();
     private List<JjedsHelperDto> employees = new();
 
     protected override async Task OnInitializedAsync()
@@ -211,7 +211,7 @@
             segments = await SegmentApiClient.GetAllAsync();
             regions = await RegionApiClient.GetAllAsync();
             functions = await FunctionApiClient.GetAllAsync();
-            statuses = await StatusApiClient.GetAllAsync();
+            statuses = await RpaStatusApiClient.GetAllAsync();
             employees = await JjedsHelperApiClient.GetAllAsync();
         }
         catch (Exception ex)

@@ -12,7 +12,7 @@ builder.Services.AddRazorComponents()
 builder.Services.AddMudServices();
 
 // Register API Clients (all 22 entities)
-builder.Services.AddScoped<StatusApiClient>();
+builder.Services.AddScoped<RpaStatusApiClient>();
 builder.Services.AddScoped<ComplexityApiClient>();
 builder.Services.AddScoped<MedalApiClient>();
 builder.Services.AddScoped<RegionApiClient>();

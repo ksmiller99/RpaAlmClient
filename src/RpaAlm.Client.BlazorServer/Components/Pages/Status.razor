@@ -1,6 +1,6 @@
 @page "/status"
 @rendermode InteractiveServer
-@inject StatusApiClient ApiClient
+@inject RpaStatusApiClient ApiClient
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 
@@ -11,7 +11,7 @@
 <MudGrid>
     <MudItem xs="12" md="8">
         <MudPaper Elevation="2">
-            <MudDataGrid T="StatusDto" Items="@entities" Dense="true" Hover="true"
+            <MudDataGrid T="RpaStatusDto" Items="@entities" Dense="true" Hover="true"
                          Loading="@loading" RowClick="@OnRowClick" SelectedItemChanged="@OnRowSelected">
                 <Columns>
                     <PropertyColumn Property="x => x.Id" Title="ID" />
@@ -66,8 +66,8 @@
 </MudGrid>
 
 @code {
-    private List<StatusDto> entities = new();
-    private StatusDto currentEntity = new();
+    private List<RpaStatusDto> entities = new();
+    private RpaStatusDto currentEntity = new();
     private int? selectedId;
     private bool isEditing => selectedId.HasValue;
     private bool loading;
@@ -94,17 +94,17 @@
         }
     }
 
-    private void OnRowClick(DataGridRowClickEventArgs<StatusDto> args)
+    private void OnRowClick(DataGridRowClickEventArgs<RpaStatusDto> args)
     {
         // Row selection handled by SelectedItemChanged
     }
 
-    private void OnRowSelected(StatusDto? selected)
+    private void OnRowSelected(RpaStatusDto? selected)
     {
         if (selected != null)
         {
             selectedId = selected.Id;
-            currentEntity = new StatusDto
+            currentEntity = new RpaStatusDto
             {
                 Code = selected.Code,
                 Description = selected.Description
@@ -118,7 +118,7 @@
         {
             if (isEditing)
             {
-                var request = new StatusUpdateRequest
+                var request = new RpaStatusUpdateRequest
                 {
                     Code = currentEntity.Code?.Trim(),
                     Description = currentEntity.Description?.Trim()
@@ -128,7 +128,7 @@
             }
             else
             {
-                var request = new StatusCreateRequest
+                var request = new RpaStatusCreateRequest
                 {
                     Code = currentEntity.Code?.Trim(),
                     Description = currentEntity.Description?.Trim()
@@ -172,6 +172,6 @@
     private void ClearForm()
     {
         selectedId = null;
-        currentEntity = new StatusDto();
+        currentEntity = new RpaStatusDto();
     }
 }
