@@ -268,12 +268,12 @@ public partial class EnhancementUserStoryManagementForm : Form
     private void ClearForm()
     {
         _selectedEnhancementUserStoryId = null;
-        cmbEnhancement.SelectedIndex = 0;
+        cmbEnhancement.SelectedIndex = -1;
         txtJiraIssue.Text = string.Empty;
         txtStoryPoints.Text = string.Empty;
         txtJiraIssueLink.Text = string.Empty;
         txtJiraIssueSummary.Text = string.Empty;
-        cmbStoryPointCost.SelectedIndex = 0;
+        cmbStoryPointCost.SelectedIndex = -1;
         btnUpdate.Enabled = false;
         btnDelete.Enabled = false;
     }

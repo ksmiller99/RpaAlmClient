@@ -259,8 +259,8 @@ public partial class ViAssignmentsManagementForm : Form
     private void ClearForm()
     {
         _selectedViAssignmentId = null;
-        cmbVirtualIdentity.SelectedIndex = 0;
-        cmbAutomationEnvironment.SelectedIndex = 0;
+        cmbVirtualIdentity.SelectedIndex = -1;
+        cmbAutomationEnvironment.SelectedIndex = -1;
         txtPercentage.Text = string.Empty;
         txtStartDate.Text = string.Empty;
         txtEndDate.Text = string.Empty;

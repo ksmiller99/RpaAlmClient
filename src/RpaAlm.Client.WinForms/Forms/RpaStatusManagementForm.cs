@@ -8,7 +8,7 @@ namespace RpaAlm.Client.WinForms.Forms;
 public partial class RpaStatusManagementForm : Form
 {
     private readonly RpaStatusApiClient _rpaStatusApiClient;
-    private DataGridView dgvStatuses = null!;
+    private DataGridView dgvRpaStatuses = null!;
     private TextBox txtCode = null!;
     private TextBox txtDescription = null!;
     private Button btnAdd = null!;
@@ -17,23 +17,23 @@ public partial class RpaStatusManagementForm : Form
     private Button btnRefresh = null!;
     private Label lblCode = null!;
     private Label lblDescription = null!;
-    private int? _selectedStatusId;
+    private int? _selectedRpaStatusId;
 
     public RpaStatusManagementForm()
     {
         _rpaStatusApiClient = new RpaStatusApiClient();
         InitializeComponents();
-        _ = LoadStatusesAsync();
+        _ = LoadRpaStatusesAsync();
     }
 
     private void InitializeComponents()
     {
-        this.Text = "RPA ALM - Status Management";
+        this.Text = "RPA ALM - RPA Status Management";
         this.Size = new Size(900, 600);
         this.StartPosition = FormStartPosition.CenterScreen;
 
         // DataGridView
-        dgvStatuses = new DataGridView
+        dgvRpaStatuses = new DataGridView
         {
             Location = new Point(20, 20),
             Size = new Size(540, 500),
@@ -43,7 +43,7 @@ public partial class RpaStatusManagementForm : Form
             ReadOnly = true,
             AllowUserToAddRows = false
         };
-        dgvStatuses.SelectionChanged += DgvStatuses_SelectionChanged;
+        dgvRpaStatuses.SelectionChanged += DgvRpaStatusesSelectionChanged;
 
         // Labels
         lblCode = new Label { Text = "Code:", Location = new Point(580, 30), Size = new Size(100, 23) };
@@ -59,44 +59,44 @@ public partial class RpaStatusManagementForm : Form
         btnDelete = new Button { Text = "Delete", Location = new Point(800, 190), Size = new Size(70, 30), Enabled = false };
         btnRefresh = new Button { Text = "Refresh", Location = new Point(580, 230), Size = new Size(100, 30) };
 
-        btnAdd.Click += async (s, e) => await AddStatusAsync();
-        btnUpdate.Click += async (s, e) => await UpdateStatusAsync();
-        btnDelete.Click += async (s, e) => await DeleteStatusAsync();
-        btnRefresh.Click += async (s, e) => await LoadStatusesAsync();
+        btnAdd.Click += async (s, e) => await AddRpaStatusAsync();
+        btnUpdate.Click += async (s, e) => await UpdateRpaStatusAsync();
+        btnDelete.Click += async (s, e) => await DeleteRpaStatusAsync();
+        btnRefresh.Click += async (s, e) => await LoadRpaStatusesAsync();
 
         // Add controls to form
         this.Controls.AddRange(new Control[]
         {
-            dgvStatuses, lblCode, lblDescription,
+            dgvRpaStatuses, lblCode, lblDescription,
             txtCode, txtDescription,
             btnAdd, btnUpdate, btnDelete, btnRefresh
         });
     }
 
-    private async Task LoadStatusesAsync()
+    private async Task LoadRpaStatusesAsync()
     {
         try
         {
-            var statuses = await _rpaStatusApiClient.GetAllAsync();
-            dgvStatuses.DataSource = statuses;
+            var rpaStatuses = await _rpaStatusApiClient.GetAllAsync();
+            dgvRpaStatuses.DataSource = rpaStatuses;
             ClearForm();
         }
         catch (Exception ex)
         {
-            MessageBox.Show($"Error loading statuses: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show($"Error loading RpaStatuses: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 
-    private void DgvStatuses_SelectionChanged(object? sender, EventArgs e)
+    private void DgvRpaStatusesSelectionChanged(object? sender, EventArgs e)
     {
-        if (dgvStatuses.SelectedRows.Count > 0)
+        if (dgvRpaStatuses.SelectedRows.Count > 0)
         {
-            var row = dgvStatuses.SelectedRows[0];
+            var row = dgvRpaStatuses.SelectedRows[0];
             var status = row.DataBoundItem as RpaStatusDto;
 
             if (status != null)
             {
-                _selectedStatusId = status.Id;
+                _selectedRpaStatusId = status.Id;
                 txtCode.Text = status.Code ?? string.Empty;
                 txtDescription.Text = status.Description ?? string.Empty;
                 btnUpdate.Enabled = true;
@@ -105,7 +105,7 @@ public partial class RpaStatusManagementForm : Form
         }
     }
 
-    private async Task AddStatusAsync()
+    private async Task AddRpaStatusAsync()
     {
         try
         {
@@ -123,7 +123,7 @@ public partial class RpaStatusManagementForm : Form
 
             await _rpaStatusApiClient.CreateAsync(request);
             MessageBox.Show("Status created successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            await LoadStatusesAsync();
+            await LoadRpaStatusesAsync();
         }
         catch (Exception ex)
         {
@@ -131,11 +131,11 @@ public partial class RpaStatusManagementForm : Form
         }
     }
 
-    private async Task UpdateStatusAsync()
+    private async Task UpdateRpaStatusAsync()
     {
         try
         {
-            if (_selectedStatusId == null)
+            if (_selectedRpaStatusId == null)
             {
                 MessageBox.Show("Please select a status to update.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -153,9 +153,9 @@ public partial class RpaStatusManagementForm : Form
                 Description = string.IsNullOrWhiteSpace(txtDescription.Text) ? null : txtDescription.Text.Trim()
             };
 
-            await _rpaStatusApiClient.UpdateAsync(_selectedStatusId.Value, request);
+            await _rpaStatusApiClient.UpdateAsync(_selectedRpaStatusId.Value, request);
             MessageBox.Show("Status updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            await LoadStatusesAsync();
+            await LoadRpaStatusesAsync();
         }
         catch (Exception ex)
         {
@@ -163,11 +163,11 @@ public partial class RpaStatusManagementForm : Form
         }
     }
 
-    private async Task DeleteStatusAsync()
+    private async Task DeleteRpaStatusAsync()
     {
         try
         {
-            if (_selectedStatusId == null)
+            if (_selectedRpaStatusId == null)
             {
                 MessageBox.Show("Please select a status to delete.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -182,9 +182,9 @@ public partial class RpaStatusManagementForm : Form
 
             if (result == DialogResult.Yes)
             {
-                await _rpaStatusApiClient.DeleteAsync(_selectedStatusId.Value);
+                await _rpaStatusApiClient.DeleteAsync(_selectedRpaStatusId.Value);
                 MessageBox.Show("Status deleted successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                await LoadStatusesAsync();
+                await LoadRpaStatusesAsync();
             }
         }
         catch (Exception ex)
@@ -195,7 +195,7 @@ public partial class RpaStatusManagementForm : Form
 
     private void ClearForm()
     {
-        _selectedStatusId = null;
+        _selectedRpaStatusId = null;
         txtCode.Text = string.Empty;
         txtDescription.Text = string.Empty;
         btnUpdate.Enabled = false;

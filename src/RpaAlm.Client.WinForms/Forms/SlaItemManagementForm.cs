@@ -253,9 +253,9 @@ public partial class SlaItemManagementForm : Form
     private void ClearForm()
     {
         _selectedSlaItemId = null;
-        cmbSlaMaster.SelectedIndex = 0;
-        cmbSlaItemType.SelectedIndex = 0;
-        cmbEnhancement.SelectedIndex = 0;
+        cmbSlaMaster.SelectedIndex = -1;
+        cmbSlaItemType.SelectedIndex = -1;
+        cmbEnhancement.SelectedIndex = -1;
         btnUpdate.Enabled = false;
         btnDelete.Enabled = false;
     }

@@ -10,7 +10,7 @@ namespace RpaAlm.Shared.ApiClient.Clients;
 public class RpaStatusApiClient
 {
     private readonly ApiClient _apiClient;
-    private const string Endpoint = "/api/status";
+    private const string Endpoint = "/api/rpastatus";
 
     public RpaStatusApiClient()
     {

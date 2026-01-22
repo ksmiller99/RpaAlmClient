@@ -18,7 +18,7 @@ public partial class AutomationManagementForm : Form
     private ComboBox cmbSegment = null!;
     private ComboBox cmbRegion = null!;
     private ComboBox cmbFunction = null!;
-    private ComboBox cmbStatus = null!;
+    private ComboBox cmbRpaStatus = null!;
     private TextBox txtBtoWWID = null!;
     private TextBox txtBoWWID = null!;
     private TextBox txtFcWWID = null!;
@@ -34,7 +34,7 @@ public partial class AutomationManagementForm : Form
     private Label lblSegment = null!;
     private Label lblRegion = null!;
     private Label lblFunction = null!;
-    private Label lblStatus = null!;
+    private Label lblRpaStatus = null!;
     private Label lblBtoWWID = null!;
     private Label lblBoWWID = null!;
     private Label lblFcWWID = null!;
@@ -120,8 +120,8 @@ public partial class AutomationManagementForm : Form
         };
         currentY += yIncrement;
 
-        lblStatus = new Label { Text = "Status:", Location = new Point(labelX, currentY), Size = new Size(160, 23) };
-        cmbStatus = new ComboBox
+        lblRpaStatus = new Label { Text = "Status:", Location = new Point(labelX, currentY), Size = new Size(160, 23) };
+        cmbRpaStatus = new ComboBox
         {
             Location = new Point(controlX, currentY),
             Size = new Size(220, 23),
@@ -174,10 +174,10 @@ public partial class AutomationManagementForm : Form
         this.Controls.AddRange(new Control[]
         {
             dgvAutomations,
-            lblName, lblSegment, lblRegion, lblFunction, lblStatus,
+            lblName, lblSegment, lblRegion, lblFunction, lblRpaStatus,
             lblBtoWWID, lblBoWWID, lblFcWWID, lblBuildZcode, lblBuildCostCenter,
             lblSseWWID, lblLseWWID,
-            txtName, cmbSegment, cmbRegion, cmbFunction, cmbStatus,
+            txtName, cmbSegment, cmbRegion, cmbFunction, cmbRpaStatus,
             txtBtoWWID, txtBoWWID, txtFcWWID, txtBuildZcode, txtBuildCostCenter,
             txtSseWWID, txtLseWWID,
             btnAdd, btnUpdate, btnDelete, btnRefresh
@@ -202,7 +202,7 @@ public partial class AutomationManagementForm : Form
             cmbSegment.DataSource = segments;
             cmbRegion.DataSource = regions;
             cmbFunction.DataSource = functions;
-            cmbStatus.DataSource = statuses;
+            cmbRpaStatus.DataSource = statuses;
         }
         catch (Exception ex)
         {
@@ -238,7 +238,7 @@ public partial class AutomationManagementForm : Form
                 cmbSegment.SelectedValue = automation.SegmentID ?? 0;
                 cmbRegion.SelectedValue = automation.RegionID ?? 0;
                 cmbFunction.SelectedValue = automation.FunctionID ?? 0;
-                cmbStatus.SelectedValue = automation.StatusID ?? 0;
+                cmbRpaStatus.SelectedValue = automation.StatusID ?? 0;
                 txtBtoWWID.Text = automation.BtoWWID ?? string.Empty;
                 txtBoWWID.Text = automation.BoWWID ?? string.Empty;
                 txtFcWWID.Text = automation.FcWWID ?? string.Empty;
@@ -268,7 +268,7 @@ public partial class AutomationManagementForm : Form
                 SegmentID = GetComboBoxValue(cmbSegment),
                 RegionID = GetComboBoxValue(cmbRegion),
                 FunctionID = GetComboBoxValue(cmbFunction),
-                StatusID = GetComboBoxValue(cmbStatus),
+                RpaStatusID = GetComboBoxValue(cmbRpaStatus),
                 BtoWWID = string.IsNullOrWhiteSpace(txtBtoWWID.Text) ? null : txtBtoWWID.Text.Trim(),
                 BoWWID = string.IsNullOrWhiteSpace(txtBoWWID.Text) ? null : txtBoWWID.Text.Trim(),
                 FcWWID = string.IsNullOrWhiteSpace(txtFcWWID.Text) ? null : txtFcWWID.Text.Trim(),
@@ -310,7 +310,7 @@ public partial class AutomationManagementForm : Form
                 SegmentID = GetComboBoxValue(cmbSegment),
                 RegionID = GetComboBoxValue(cmbRegion),
                 FunctionID = GetComboBoxValue(cmbFunction),
-                StatusID = GetComboBoxValue(cmbStatus),
+                StatusID = GetComboBoxValue(cmbRpaStatus),
                 BtoWWID = string.IsNullOrWhiteSpace(txtBtoWWID.Text) ? null : txtBtoWWID.Text.Trim(),
                 BoWWID = string.IsNullOrWhiteSpace(txtBoWWID.Text) ? null : txtBoWWID.Text.Trim(),
                 FcWWID = string.IsNullOrWhiteSpace(txtFcWWID.Text) ? null : txtFcWWID.Text.Trim(),
@@ -367,7 +367,7 @@ public partial class AutomationManagementForm : Form
         cmbSegment.SelectedIndex = -1;
         cmbRegion.SelectedIndex = -1;
         cmbFunction.SelectedIndex = -1;
-        cmbStatus.SelectedIndex = -1;
+        cmbRpaStatus.SelectedIndex = -1;
         txtBtoWWID.Text = string.Empty;
         txtBoWWID.Text = string.Empty;
         txtFcWWID.Text = string.Empty;

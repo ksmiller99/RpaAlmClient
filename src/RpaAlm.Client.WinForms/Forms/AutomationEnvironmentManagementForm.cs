@@ -241,9 +241,9 @@ public partial class AutomationEnvironmentManagementForm : Form
     private void ClearForm()
     {
         _selectedAutomationEnvironmentId = null;
-        cmbAutomation.SelectedIndex = 0;
+        cmbAutomation.SelectedIndex = -1;
         txtAppID.Text = string.Empty;
-        cmbEnvironmentType.SelectedIndex = 0;
+        cmbEnvironmentType.SelectedIndex = -1;
         btnUpdate.Enabled = false;
         btnDelete.Enabled = false;
     }

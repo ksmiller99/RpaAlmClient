@@ -278,7 +278,7 @@ public partial class VirtualIdentityManagementForm : Form
         txtHostName.Text = string.Empty;
         txtWWID.Text = string.Empty;
         txtIPv4.Text = string.Empty;
-        cmbADDomain.SelectedIndex = 0;
+        cmbADDomain.SelectedIndex = -1;
         txtEmail.Text = string.Empty;
         txtCreated.Text = string.Empty;
         txtRetired.Text = string.Empty;

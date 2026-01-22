@@ -289,9 +289,9 @@ public partial class SlaMasterManagementForm : Form
     private void ClearForm()
     {
         _selectedSlaMasterId = null;
-        cmbAutomation.SelectedIndex = 0;
-        cmbComplexity.SelectedIndex = 0;
-        cmbMedal.SelectedIndex = 0;
+        cmbAutomation.SelectedIndex = -1;
+        cmbComplexity.SelectedIndex = -1;
+        cmbMedal.SelectedIndex = -1;
         txtZcode.Text = string.Empty;
         txtCostCenter.Text = string.Empty;
         txtStartDate.Text = string.Empty;
