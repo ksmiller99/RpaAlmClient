@@ -364,10 +364,10 @@ public partial class AutomationManagementForm : Form
     {
         _selectedAutomationId = null;
         txtName.Text = string.Empty;
-        cmbSegment.SelectedIndex = 0;
-        cmbRegion.SelectedIndex = 0;
-        cmbFunction.SelectedIndex = 0;
-        cmbStatus.SelectedIndex = 0;
+        cmbSegment.SelectedIndex = -1;
+        cmbRegion.SelectedIndex = -1;
+        cmbFunction.SelectedIndex = -1;
+        cmbStatus.SelectedIndex = -1;
         txtBtoWWID.Text = string.Empty;
         txtBoWWID.Text = string.Empty;
         txtFcWWID.Text = string.Empty;

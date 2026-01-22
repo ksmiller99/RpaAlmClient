@@ -5,7 +5,7 @@ using RpaAlm.Shared.ApiClient.Clients;
 
 namespace RpaAlm.Client.WinForms.Forms;
 
-public partial class StatusManagementForm : Form
+public partial class RpaStatusManagementForm : Form
 {
     private readonly RpaStatusApiClient _rpaStatusApiClient;
     private DataGridView dgvStatuses = null!;
@@ -19,7 +19,7 @@ public partial class StatusManagementForm : Form
     private Label lblDescription = null!;
     private int? _selectedStatusId;
 
-    public StatusManagementForm()
+    public RpaStatusManagementForm()
     {
         _rpaStatusApiClient = new RpaStatusApiClient();
         InitializeComponents();

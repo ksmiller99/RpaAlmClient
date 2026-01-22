@@ -1,0 +1,1 @@
+curl.exe -X "GET" "https://localhost:65078/api/ADDomain" -H "accept: text/plain"

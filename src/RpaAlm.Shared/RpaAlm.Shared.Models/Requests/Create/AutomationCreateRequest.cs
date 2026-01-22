@@ -14,7 +14,7 @@ public class AutomationCreateRequest
 
     public int? FunctionID { get; set; }
 
-    public int? StatusID { get; set; }
+    public int? RpaStatusID { get; set; }
 
     [StringLength(9, ErrorMessage = "BtoWWID must be 9 characters")]
     public string? BtoWWID { get; set; }
