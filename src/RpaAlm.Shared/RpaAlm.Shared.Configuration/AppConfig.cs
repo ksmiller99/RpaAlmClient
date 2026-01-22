@@ -23,7 +23,7 @@ public static class AppConfig
             }
 
             // _configuration is guaranteed to be non-null after LoadConfiguration()
-            var baseUrl = _configuration!["ApiSettings:BaseUrl"];
+            var baseUrl = _configuration!["ApiSettings:ApiBaseUrl"];
             if (string.IsNullOrEmpty(baseUrl))
             {
                 throw new InvalidOperationException(
