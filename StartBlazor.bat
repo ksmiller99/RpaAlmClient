@@ -1,0 +1,1 @@
+dotnet run --project src/RpaAlm.Client.BlazorServer/RpaAlm.Client.BlazorServer.csproj

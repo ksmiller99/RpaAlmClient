@@ -33,7 +33,9 @@
         <MudPaper Elevation="2" Class="pa-4" Style="max-height: 700px; overflow-y: auto;">
             <MudText Typo="Typo.h6" Class="mb-4">@(isEditing ? "Edit Automation" : "Add New Automation")</MudText>
 
-            <EditForm Model="@currentEntity" OnValidSubmit="HandleSubmit">
+            <EditForm Model="@currentEntity" OnValidSubmit="HandleSubmit" FormName="AutomationForm">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
                 <MudTextField @bind-Value="currentEntity.Name"
                               Label="Name"
                               Required="true"
