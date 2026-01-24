@@ -118,7 +118,10 @@
 
 @code {
     private List<VirtualIdentityDto> entities = new();
-    private VirtualIdentityDto currentEntity = new();
+
+    [SupplyParameterFromForm]
+    private VirtualIdentityDto currentEntity { get; set; } = new();
+
     private int? selectedId;
     private bool isEditing => selectedId.HasValue;
     private bool loading;

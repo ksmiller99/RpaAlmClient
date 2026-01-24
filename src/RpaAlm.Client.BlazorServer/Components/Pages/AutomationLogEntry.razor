@@ -94,7 +94,10 @@
 
 @code {
     private List<AutomationLogEntryDto> entities = new();
-    private AutomationLogEntryDto currentEntity = new();
+
+    [SupplyParameterFromForm]
+    private AutomationLogEntryDto currentEntity { get; set; } = new();
+
     private int? selectedId;
     private bool isEditing => selectedId.HasValue;
     private bool loading;

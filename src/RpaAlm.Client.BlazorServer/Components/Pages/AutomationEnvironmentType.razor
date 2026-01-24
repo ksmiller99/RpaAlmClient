@@ -69,7 +69,10 @@
 
 @code {
     private List<AutomationEnvironmentTypeDto> entities = new();
-    private AutomationEnvironmentTypeDto currentEntity = new();
+
+    [SupplyParameterFromForm]
+    private AutomationEnvironmentTypeDto currentEntity { get; set; } = new();
+
     private int? selectedId;
     private bool isEditing => selectedId.HasValue;
     private bool loading;

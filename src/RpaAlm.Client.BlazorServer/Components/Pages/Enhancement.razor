@@ -69,7 +69,10 @@
 
 @code {
     private List<EnhancementDto> entities = new();
-    private EnhancementDto currentEntity = new();
+
+    [SupplyParameterFromForm]
+    private EnhancementDto currentEntity { get; set; } = new();
+
     private int? selectedId;
     private bool isEditing => selectedId.HasValue;
     private bool loading;

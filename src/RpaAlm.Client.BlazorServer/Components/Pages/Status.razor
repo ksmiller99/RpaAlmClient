@@ -69,7 +69,10 @@
 
 @code {
     private List<StatusDto> entities = new();
-    private StatusDto currentEntity = new();
+
+    [SupplyParameterFromForm]
+    private StatusDto currentEntity { get; set; } = new();
+
     private int? selectedId;
     private bool isEditing => selectedId.HasValue;
     private bool loading;

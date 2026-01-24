@@ -107,7 +107,10 @@
 
 @code {
     private List<EnhancementUserStoryDto> entities = new();
-    private EnhancementUserStoryDto currentEntity = new();
+
+    [SupplyParameterFromForm]
+    private EnhancementUserStoryDto currentEntity { get; set; } = new();
+
     private int? selectedId;
     private bool isEditing => selectedId.HasValue;
     private bool loading;

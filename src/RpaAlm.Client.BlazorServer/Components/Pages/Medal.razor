@@ -69,7 +69,10 @@
 
 @code {
     private List<MedalDto> entities = new();
-    private MedalDto currentEntity = new();
+
+    [SupplyParameterFromForm]
+    private MedalDto currentEntity { get; set; } = new();
+
     private int? selectedId;
     private bool isEditing => selectedId.HasValue;
     private bool loading;

@@ -69,7 +69,10 @@
 
 @code {
     private List<SegmentDto> entities = new();
-    private SegmentDto currentEntity = new();
+
+    [SupplyParameterFromForm]
+    private SegmentDto currentEntity { get; set; } = new();
+
     private int? selectedId;
     private bool isEditing => selectedId.HasValue;
     private bool loading;

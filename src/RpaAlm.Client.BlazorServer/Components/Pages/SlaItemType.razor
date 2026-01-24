@@ -69,7 +69,10 @@
 
 @code {
     private List<SlaItemTypeDto> entities = new();
-    private SlaItemTypeDto currentEntity = new();
+
+    [SupplyParameterFromForm]
+    private SlaItemTypeDto currentEntity { get; set; } = new();
+
     private int? selectedId;
     private bool isEditing => selectedId.HasValue;
     private bool loading;

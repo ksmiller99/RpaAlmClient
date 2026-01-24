@@ -94,7 +94,10 @@
 
 @code {
     private List<SlaLogEntryDto> entities = new();
-    private SlaLogEntryDto currentEntity = new();
+
+    [SupplyParameterFromForm]
+    private SlaLogEntryDto currentEntity { get; set; } = new();
+
     private int? selectedId;
     private bool isEditing => selectedId.HasValue;
     private bool loading;

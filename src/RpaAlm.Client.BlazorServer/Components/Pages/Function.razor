@@ -69,7 +69,10 @@
 
 @code {
     private List<FunctionDto> entities = new();
-    private FunctionDto currentEntity = new();
+
+    [SupplyParameterFromForm]
+    private FunctionDto currentEntity { get; set; } = new();
+
     private int? selectedId;
     private bool isEditing => selectedId.HasValue;
     private bool loading;

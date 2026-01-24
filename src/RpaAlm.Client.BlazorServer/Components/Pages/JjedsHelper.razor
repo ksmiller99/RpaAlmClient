@@ -90,7 +90,10 @@
 
 @code {
     private List<JjedsHelperDto> entities = new();
-    private JjedsHelperDto currentEntity = new();
+
+    [SupplyParameterFromForm]
+    private JjedsHelperDto currentEntity { get; set; } = new();
+
     private string? selectedWwid;
     private bool isEditing => !string.IsNullOrEmpty(selectedWwid);
     private bool loading;

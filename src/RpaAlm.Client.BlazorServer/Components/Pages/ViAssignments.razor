@@ -101,7 +101,10 @@
 
 @code {
     private List<ViAssignmentsDto> entities = new();
-    private ViAssignmentsDto currentEntity = new();
+
+    [SupplyParameterFromForm]
+    private ViAssignmentsDto currentEntity { get; set; } = new();
+
     private int? selectedId;
     private bool isEditing => selectedId.HasValue;
     private bool loading;

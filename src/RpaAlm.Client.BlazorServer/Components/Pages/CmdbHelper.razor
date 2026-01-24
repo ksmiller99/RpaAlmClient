@@ -77,7 +77,10 @@
 
 @code {
     private List<CmdbHelperDto> entities = new();
-    private CmdbHelperDto currentEntity = new();
+
+    [SupplyParameterFromForm]
+    private CmdbHelperDto currentEntity { get; set; } = new();
+
     private string? selectedAppId;
     private bool isEditing => !string.IsNullOrEmpty(selectedAppId);
     private bool loading;
