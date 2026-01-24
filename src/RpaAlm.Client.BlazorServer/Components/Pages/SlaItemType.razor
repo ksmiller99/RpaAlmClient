@@ -26,7 +26,7 @@
         <MudPaper Elevation="2" Class="pa-4">
             <MudText Typo="Typo.h6" Class="mb-4">@(isEditing ? "Edit SLA Item Type" : "Add New SLA Item Type")</MudText>
 
-            <EditForm Model="@currentEntity" OnValidSubmit="HandleSubmit">
+            <EditForm Model="@currentEntity" OnValidSubmit="HandleSubmit" FormName="SlaItemTypeForm">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
                 <MudTextField @bind-Value="currentEntity.Code"

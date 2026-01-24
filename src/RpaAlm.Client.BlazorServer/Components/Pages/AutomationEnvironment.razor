@@ -30,7 +30,7 @@
         <MudPaper Elevation="2" Class="pa-4">
             <MudText Typo="Typo.h6" Class="mb-4">@(isEditing ? "Edit Automation Environment" : "Add New Automation Environment")</MudText>
 
-            <EditForm Model="@currentEntity" OnValidSubmit="HandleSubmit">
+            <EditForm Model="@currentEntity" OnValidSubmit="HandleSubmit" FormName="AutomationEnvironmentForm">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
                 <MudSelect @bind-Value="currentEntity.AutomationID"
