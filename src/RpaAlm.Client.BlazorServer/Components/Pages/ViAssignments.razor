@@ -31,7 +31,7 @@
         <MudPaper Elevation="2" Class="pa-4">
             <MudText Typo="Typo.h6" Class="mb-4">@(isEditing ? "Edit Assignment" : "Add New Assignment")</MudText>
 
-            <EditForm Model="@currentEntity" OnValidSubmit="HandleSubmit" FormName="ViAssignmentsForm">
+            <EditForm Model="@currentEntity" OnValidSubmit="HandleSubmit">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
                 <MudSelect @bind-Value="currentEntity.VirtualIdentityID"
@@ -101,10 +101,7 @@
 
 @code {
     private List<ViAssignmentsDto> entities = new();
-
-    [SupplyParameterFromForm]
-    private ViAssignmentsDto currentEntity { get; set; } = new();
-
+    private ViAssignmentsDto currentEntity = new();
     private int? selectedId;
     private bool isEditing => selectedId.HasValue;
     private bool loading;
