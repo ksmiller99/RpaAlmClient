@@ -26,7 +26,7 @@
         <MudPaper Elevation="2" Class="pa-4">
             <MudText Typo="Typo.h6" Class="mb-4">@(isEditing ? "Edit CMDB Helper" : "Add New CMDB Helper")</MudText>
 
-            <EditForm Model="@currentEntity" OnValidSubmit="HandleSubmit" FormName="CmdbHelperForm">
+            <EditForm Model="@currentEntity" OnValidSubmit="HandleSubmit">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
                 <MudTextField @bind-Value="currentEntity.AppId"
