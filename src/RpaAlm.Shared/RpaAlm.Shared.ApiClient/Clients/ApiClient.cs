@@ -57,6 +57,7 @@ public class ApiClient
     public async Task<bool> DeleteAsync(string endpoint)
     {
         var response = await _httpClient.DeleteAsync(endpoint);
+        if (!response.IsSuccessStatusCode) throw new HttpRequestException(response.ReasonPhrase);
         return response.IsSuccessStatusCode;
     }
 }
