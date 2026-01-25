@@ -11,7 +11,7 @@ public partial class AutomationManagementForm : Form
     private readonly SegmentApiClient _segmentApiClient;
     private readonly RegionApiClient _regionApiClient;
     private readonly FunctionApiClient _functionApiClient;
-    private readonly StatusApiClient _statusApiClient;
+    private readonly RpaStatusApiClient _rpaStatusApiClient;
 
     private DataGridView dgvAutomations = null!;
     private TextBox txtName = null!;
@@ -50,7 +50,7 @@ public partial class AutomationManagementForm : Form
         _segmentApiClient = new SegmentApiClient();
         _regionApiClient = new RegionApiClient();
         _functionApiClient = new FunctionApiClient();
-        _statusApiClient = new StatusApiClient();
+        _rpaStatusApiClient = new RpaStatusApiClient();
 
         InitializeComponents();
         _ = LoadLookupDataAsync();
@@ -191,13 +191,13 @@ public partial class AutomationManagementForm : Form
             var segments = await _segmentApiClient.GetAllAsync();
             var regions = await _regionApiClient.GetAllAsync();
             var functions = await _functionApiClient.GetAllAsync();
-            var statuses = await _statusApiClient.GetAllAsync();
+            var statuses = await _rpaStatusApiClient.GetAllAsync();
 
             // Add empty option at the beginning
             segments.Insert(0, new SegmentDto { Id = 0, Code = "(None)" });
             regions.Insert(0, new RegionDto { Id = 0, Code = "(None)" });
             functions.Insert(0, new FunctionDto { Id = 0, Code = "(None)" });
-            statuses.Insert(0, new StatusDto { Id = 0, Code = "(None)" });
+            statuses.Insert(0, new RpaStatusDto { Id = 0, Code = "(None)" });
 
             cmbSegment.DataSource = segments;
             cmbRegion.DataSource = regions;
