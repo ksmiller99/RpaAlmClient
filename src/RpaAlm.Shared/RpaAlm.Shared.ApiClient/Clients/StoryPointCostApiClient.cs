@@ -25,7 +25,7 @@ public class StoryPointCostApiClient
 
     public async Task<StoryPointCostDto?> GetByIdAsync(int id)
     {
-        var response = await _apiClient.GetAsync<ApiResponse<StoryPointCostDto>>("${Endpoint}/{id}");
+        var response = await _apiClient.GetAsync<ApiResponse<StoryPointCostDto>>($"{Endpoint}/{id}");
         return response?.Data;
     }
 
@@ -37,12 +37,12 @@ public class StoryPointCostApiClient
 
     public async Task<StoryPointCostDto?> UpdateAsync(int id, StoryPointCostUpdateRequest request)
     {
-        var response = await _apiClient.PutAsync<StoryPointCostUpdateRequest, ApiResponse<StoryPointCostDto>>("${Endpoint}/{id}", request);
+        var response = await _apiClient.PutAsync<StoryPointCostUpdateRequest, ApiResponse<StoryPointCostDto>>($"{Endpoint}/{id}", request);
         return response?.Data;
     }
 
     public async Task<bool> DeleteAsync(int id)
     {
-        return await _apiClient.DeleteAsync("${Endpoint}/{id}");
+        return await _apiClient.DeleteAsync($"{Endpoint}/{id}");
     }
 }

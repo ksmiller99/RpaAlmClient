@@ -25,7 +25,7 @@ public class AutomationApiClient
 
     public async Task<AutomationDto?> GetByIdAsync(int id)
     {
-        var response = await _apiClient.GetAsync<ApiResponse<AutomationDto>>("${Endpoint}/{id}");
+        var response = await _apiClient.GetAsync<ApiResponse<AutomationDto>>($"{Endpoint}/{id}");
         return response?.Data;
     }
 
@@ -37,12 +37,12 @@ public class AutomationApiClient
 
     public async Task<AutomationDto?> UpdateAsync(int id, AutomationUpdateRequest request)
     {
-        var response = await _apiClient.PutAsync<AutomationUpdateRequest, ApiResponse<AutomationDto>>("${Endpoint}/{id}", request);
+        var response = await _apiClient.PutAsync<AutomationUpdateRequest, ApiResponse<AutomationDto>>($"{Endpoint}/{id}", request);
         return response?.Data;
     }
 
     public async Task<bool> DeleteAsync(int id)
     {
-        return await _apiClient.DeleteAsync("${Endpoint}/{id}");
+        return await _apiClient.DeleteAsync($"{Endpoint}/{id}");
     }
 }

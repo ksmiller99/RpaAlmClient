@@ -25,7 +25,7 @@ public class SlaLogEntryApiClient
 
     public async Task<SlaLogEntryDto?> GetByIdAsync(int id)
     {
-        var response = await _apiClient.GetAsync<ApiResponse<SlaLogEntryDto>>("${Endpoint}/{id}");
+        var response = await _apiClient.GetAsync<ApiResponse<SlaLogEntryDto>>($"{Endpoint}/{id}");
         return response?.Data;
     }
 
@@ -37,12 +37,12 @@ public class SlaLogEntryApiClient
 
     public async Task<SlaLogEntryDto?> UpdateAsync(int id, SlaLogEntryUpdateRequest request)
     {
-        var response = await _apiClient.PutAsync<SlaLogEntryUpdateRequest, ApiResponse<SlaLogEntryDto>>("${Endpoint}/{id}", request);
+        var response = await _apiClient.PutAsync<SlaLogEntryUpdateRequest, ApiResponse<SlaLogEntryDto>>($"{Endpoint}/{id}", request);
         return response?.Data;
     }
 
     public async Task<bool> DeleteAsync(int id)
     {
-        return await _apiClient.DeleteAsync("${Endpoint}/{id}");
+        return await _apiClient.DeleteAsync($"{Endpoint}/{id}");
     }
 }

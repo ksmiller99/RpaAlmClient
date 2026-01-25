@@ -25,7 +25,7 @@ public class VirtualIdentityApiClient
 
     public async Task<VirtualIdentityDto?> GetByIdAsync(int id)
     {
-        var response = await _apiClient.GetAsync<ApiResponse<VirtualIdentityDto>>("${Endpoint}/{id}");
+        var response = await _apiClient.GetAsync<ApiResponse<VirtualIdentityDto>>($"{Endpoint}/{id}");
         return response?.Data;
     }
 
@@ -37,12 +37,12 @@ public class VirtualIdentityApiClient
 
     public async Task<VirtualIdentityDto?> UpdateAsync(int id, VirtualIdentityUpdateRequest request)
     {
-        var response = await _apiClient.PutAsync<VirtualIdentityUpdateRequest, ApiResponse<VirtualIdentityDto>>("${Endpoint}/{id}", request);
+        var response = await _apiClient.PutAsync<VirtualIdentityUpdateRequest, ApiResponse<VirtualIdentityDto>>($"{Endpoint}/{id}", request);
         return response?.Data;
     }
 
     public async Task<bool> DeleteAsync(int id)
     {
-        return await _apiClient.DeleteAsync("${Endpoint}/{id}");
+        return await _apiClient.DeleteAsync($"{Endpoint}/{id}");
     }
 }

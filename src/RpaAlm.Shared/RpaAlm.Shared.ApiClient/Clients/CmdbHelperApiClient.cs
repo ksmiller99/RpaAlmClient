@@ -25,7 +25,7 @@ public class CmdbHelperApiClient
 
     public async Task<CmdbHelperDto?> GetByIdAsync(int id)
     {
-        var response = await _apiClient.GetAsync<ApiResponse<CmdbHelperDto>>("${Endpoint}/{id}");
+        var response = await _apiClient.GetAsync<ApiResponse<CmdbHelperDto>>($"{Endpoint}/{id}");
         return response?.Data;
     }
 
@@ -37,12 +37,12 @@ public class CmdbHelperApiClient
 
     public async Task<CmdbHelperDto?> UpdateAsync(int id, CmdbHelperUpdateRequest request)
     {
-        var response = await _apiClient.PutAsync<CmdbHelperUpdateRequest, ApiResponse<CmdbHelperDto>>("${Endpoint}/{id}", request);
+        var response = await _apiClient.PutAsync<CmdbHelperUpdateRequest, ApiResponse<CmdbHelperDto>>($"{Endpoint}/{id}", request);
         return response?.Data;
     }
 
     public async Task<bool> DeleteAsync(int id)
     {
-        return await _apiClient.DeleteAsync("${Endpoint}/{id}");
+        return await _apiClient.DeleteAsync($"{Endpoint}/{id}");
     }
 }

@@ -25,7 +25,7 @@ public class ComplexityApiClient
 
     public async Task<ComplexityDto?> GetByIdAsync(int id)
     {
-        var response = await _apiClient.GetAsync<ApiResponse<ComplexityDto>>("${Endpoint}/{id}");
+        var response = await _apiClient.GetAsync<ApiResponse<ComplexityDto>>($"{Endpoint}/{id}");
         return response?.Data;
     }
 
@@ -37,12 +37,12 @@ public class ComplexityApiClient
 
     public async Task<ComplexityDto?> UpdateAsync(int id, ComplexityUpdateRequest request)
     {
-        var response = await _apiClient.PutAsync<ComplexityUpdateRequest, ApiResponse<ComplexityDto>>("${Endpoint}/{id}", request);
+        var response = await _apiClient.PutAsync<ComplexityUpdateRequest, ApiResponse<ComplexityDto>>($"{Endpoint}/{id}", request);
         return response?.Data;
     }
 
     public async Task<bool> DeleteAsync(int id)
     {
-        return await _apiClient.DeleteAsync("${Endpoint}/{id}");
+        return await _apiClient.DeleteAsync($"{Endpoint}/{id}");
     }
 }

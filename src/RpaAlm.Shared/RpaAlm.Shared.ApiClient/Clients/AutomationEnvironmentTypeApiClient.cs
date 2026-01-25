@@ -25,7 +25,7 @@ public class AutomationEnvironmentTypeApiClient
 
     public async Task<AutomationEnvironmentTypeDto?> GetByIdAsync(int id)
     {
-        var response = await _apiClient.GetAsync<ApiResponse<AutomationEnvironmentTypeDto>>("${Endpoint}/{id}");
+        var response = await _apiClient.GetAsync<ApiResponse<AutomationEnvironmentTypeDto>>($"{Endpoint}/{id}");
         return response?.Data;
     }
 
@@ -37,12 +37,12 @@ public class AutomationEnvironmentTypeApiClient
 
     public async Task<AutomationEnvironmentTypeDto?> UpdateAsync(int id, AutomationEnvironmentTypeUpdateRequest request)
     {
-        var response = await _apiClient.PutAsync<AutomationEnvironmentTypeUpdateRequest, ApiResponse<AutomationEnvironmentTypeDto>>("${Endpoint}/{id}", request);
+        var response = await _apiClient.PutAsync<AutomationEnvironmentTypeUpdateRequest, ApiResponse<AutomationEnvironmentTypeDto>>($"{Endpoint}/{id}", request);
         return response?.Data;
     }
 
     public async Task<bool> DeleteAsync(int id)
     {
-        return await _apiClient.DeleteAsync("${Endpoint}/{id}");
+        return await _apiClient.DeleteAsync($"{Endpoint}/{id}");
     }
 }

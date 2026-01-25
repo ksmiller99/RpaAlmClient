@@ -25,7 +25,7 @@ public class SlaMasterApiClient
 
     public async Task<SlaMasterDto?> GetByIdAsync(int id)
     {
-        var response = await _apiClient.GetAsync<ApiResponse<SlaMasterDto>>("${Endpoint}/{id}");
+        var response = await _apiClient.GetAsync<ApiResponse<SlaMasterDto>>($"{Endpoint}/{id}");
         return response?.Data;
     }
 
@@ -37,12 +37,12 @@ public class SlaMasterApiClient
 
     public async Task<SlaMasterDto?> UpdateAsync(int id, SlaMasterUpdateRequest request)
     {
-        var response = await _apiClient.PutAsync<SlaMasterUpdateRequest, ApiResponse<SlaMasterDto>>("${Endpoint}/{id}", request);
+        var response = await _apiClient.PutAsync<SlaMasterUpdateRequest, ApiResponse<SlaMasterDto>>($"{Endpoint}/{id}", request);
         return response?.Data;
     }
 
     public async Task<bool> DeleteAsync(int id)
     {
-        return await _apiClient.DeleteAsync("${Endpoint}/{id}");
+        return await _apiClient.DeleteAsync($"{Endpoint}/{id}");
     }
 }

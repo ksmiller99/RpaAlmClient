@@ -25,7 +25,7 @@ public class FunctionApiClient
 
     public async Task<FunctionDto?> GetByIdAsync(int id)
     {
-        var response = await _apiClient.GetAsync<ApiResponse<FunctionDto>>("${Endpoint}/{id}");
+        var response = await _apiClient.GetAsync<ApiResponse<FunctionDto>>($"{Endpoint}/{id}");
         return response?.Data;
     }
 
@@ -37,12 +37,12 @@ public class FunctionApiClient
 
     public async Task<FunctionDto?> UpdateAsync(int id, FunctionUpdateRequest request)
     {
-        var response = await _apiClient.PutAsync<FunctionUpdateRequest, ApiResponse<FunctionDto>>("${Endpoint}/{id}", request);
+        var response = await _apiClient.PutAsync<FunctionUpdateRequest, ApiResponse<FunctionDto>>($"{Endpoint}/{id}", request);
         return response?.Data;
     }
 
     public async Task<bool> DeleteAsync(int id)
     {
-        return await _apiClient.DeleteAsync("${Endpoint}/{id}");
+        return await _apiClient.DeleteAsync($"{Endpoint}/{id}");
     }
 }

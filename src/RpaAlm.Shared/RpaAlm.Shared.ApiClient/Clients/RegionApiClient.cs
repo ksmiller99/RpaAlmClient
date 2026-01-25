@@ -25,7 +25,7 @@ public class RegionApiClient
 
     public async Task<RegionDto?> GetByIdAsync(int id)
     {
-        var response = await _apiClient.GetAsync<ApiResponse<RegionDto>>("${Endpoint}/{id}");
+        var response = await _apiClient.GetAsync<ApiResponse<RegionDto>>($"{Endpoint}/{id}");
         return response?.Data;
     }
 
@@ -37,12 +37,12 @@ public class RegionApiClient
 
     public async Task<RegionDto?> UpdateAsync(int id, RegionUpdateRequest request)
     {
-        var response = await _apiClient.PutAsync<RegionUpdateRequest, ApiResponse<RegionDto>>("${Endpoint}/{id}", request);
+        var response = await _apiClient.PutAsync<RegionUpdateRequest, ApiResponse<RegionDto>>($"{Endpoint}/{id}", request);
         return response?.Data;
     }
 
     public async Task<bool> DeleteAsync(int id)
     {
-        return await _apiClient.DeleteAsync("${Endpoint}/{id}");
+        return await _apiClient.DeleteAsync($"{Endpoint}/{id}");
     }
 }

@@ -25,7 +25,7 @@ public class AutomationLogEntryApiClient
 
     public async Task<AutomationLogEntryDto?> GetByIdAsync(int id)
     {
-        var response = await _apiClient.GetAsync<ApiResponse<AutomationLogEntryDto>>("${Endpoint}/{id}");
+        var response = await _apiClient.GetAsync<ApiResponse<AutomationLogEntryDto>>($"{Endpoint}/{id}");
         return response?.Data;
     }
 
@@ -37,12 +37,12 @@ public class AutomationLogEntryApiClient
 
     public async Task<AutomationLogEntryDto?> UpdateAsync(int id, AutomationLogEntryUpdateRequest request)
     {
-        var response = await _apiClient.PutAsync<AutomationLogEntryUpdateRequest, ApiResponse<AutomationLogEntryDto>>("${Endpoint}/{id}", request);
+        var response = await _apiClient.PutAsync<AutomationLogEntryUpdateRequest, ApiResponse<AutomationLogEntryDto>>($"{Endpoint}/{id}", request);
         return response?.Data;
     }
 
     public async Task<bool> DeleteAsync(int id)
     {
-        return await _apiClient.DeleteAsync("${Endpoint}/{id}");
+        return await _apiClient.DeleteAsync($"{Endpoint}/{id}");
     }
 }

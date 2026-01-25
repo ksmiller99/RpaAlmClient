@@ -25,7 +25,7 @@ public class MedalApiClient
 
     public async Task<MedalDto?> GetByIdAsync(int id)
     {
-        var response = await _apiClient.GetAsync<ApiResponse<MedalDto>>("${Endpoint}/{id}");
+        var response = await _apiClient.GetAsync<ApiResponse<MedalDto>>($"{Endpoint}/{id}");
         return response?.Data;
     }
 
@@ -37,12 +37,12 @@ public class MedalApiClient
 
     public async Task<MedalDto?> UpdateAsync(int id, MedalUpdateRequest request)
     {
-        var response = await _apiClient.PutAsync<MedalUpdateRequest, ApiResponse<MedalDto>>("${Endpoint}/{id}", request);
+        var response = await _apiClient.PutAsync<MedalUpdateRequest, ApiResponse<MedalDto>>($"{Endpoint}/{id}", request);
         return response?.Data;
     }
 
     public async Task<bool> DeleteAsync(int id)
     {
-        return await _apiClient.DeleteAsync("${Endpoint}/{id}");
+        return await _apiClient.DeleteAsync($"{Endpoint}/{id}");
     }
 }

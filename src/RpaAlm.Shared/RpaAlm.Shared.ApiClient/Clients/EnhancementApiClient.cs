@@ -25,7 +25,7 @@ public class EnhancementApiClient
 
     public async Task<EnhancementDto?> GetByIdAsync(int id)
     {
-        var response = await _apiClient.GetAsync<ApiResponse<EnhancementDto>>("${Endpoint}/{id}");
+        var response = await _apiClient.GetAsync<ApiResponse<EnhancementDto>>($"{Endpoint}/{id}");
         return response?.Data;
     }
 
@@ -37,12 +37,12 @@ public class EnhancementApiClient
 
     public async Task<EnhancementDto?> UpdateAsync(int id, EnhancementUpdateRequest request)
     {
-        var response = await _apiClient.PutAsync<EnhancementUpdateRequest, ApiResponse<EnhancementDto>>("${Endpoint}/{id}", request);
+        var response = await _apiClient.PutAsync<EnhancementUpdateRequest, ApiResponse<EnhancementDto>>($"{Endpoint}/{id}", request);
         return response?.Data;
     }
 
     public async Task<bool> DeleteAsync(int id)
     {
-        return await _apiClient.DeleteAsync("${Endpoint}/{id}");
+        return await _apiClient.DeleteAsync($"{Endpoint}/{id}");
     }
 }

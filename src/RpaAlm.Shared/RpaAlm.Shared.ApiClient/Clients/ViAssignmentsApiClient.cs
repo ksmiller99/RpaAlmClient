@@ -25,7 +25,7 @@ public class ViAssignmentsApiClient
 
     public async Task<ViAssignmentsDto?> GetByIdAsync(int id)
     {
-        var response = await _apiClient.GetAsync<ApiResponse<ViAssignmentsDto>>("${Endpoint}/{id}");
+        var response = await _apiClient.GetAsync<ApiResponse<ViAssignmentsDto>>($"{Endpoint}/{id}");
         return response?.Data;
     }
 
@@ -37,12 +37,12 @@ public class ViAssignmentsApiClient
 
     public async Task<ViAssignmentsDto?> UpdateAsync(int id, ViAssignmentsUpdateRequest request)
     {
-        var response = await _apiClient.PutAsync<ViAssignmentsUpdateRequest, ApiResponse<ViAssignmentsDto>>("${Endpoint}/{id}", request);
+        var response = await _apiClient.PutAsync<ViAssignmentsUpdateRequest, ApiResponse<ViAssignmentsDto>>($"{Endpoint}/{id}", request);
         return response?.Data;
     }
 
     public async Task<bool> DeleteAsync(int id)
     {
-        return await _apiClient.DeleteAsync("${Endpoint}/{id}");
+        return await _apiClient.DeleteAsync($"{Endpoint}/{id}");
     }
 }

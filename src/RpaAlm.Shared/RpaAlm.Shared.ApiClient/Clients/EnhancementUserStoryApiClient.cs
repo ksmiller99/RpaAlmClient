@@ -25,7 +25,7 @@ public class EnhancementUserStoryApiClient
 
     public async Task<EnhancementUserStoryDto?> GetByIdAsync(int id)
     {
-        var response = await _apiClient.GetAsync<ApiResponse<EnhancementUserStoryDto>>("${Endpoint}/{id}");
+        var response = await _apiClient.GetAsync<ApiResponse<EnhancementUserStoryDto>>($"{Endpoint}/{id}");
         return response?.Data;
     }
 
@@ -37,12 +37,12 @@ public class EnhancementUserStoryApiClient
 
     public async Task<EnhancementUserStoryDto?> UpdateAsync(int id, EnhancementUserStoryUpdateRequest request)
     {
-        var response = await _apiClient.PutAsync<EnhancementUserStoryUpdateRequest, ApiResponse<EnhancementUserStoryDto>>("${Endpoint}/{id}", request);
+        var response = await _apiClient.PutAsync<EnhancementUserStoryUpdateRequest, ApiResponse<EnhancementUserStoryDto>>($"{Endpoint}/{id}", request);
         return response?.Data;
     }
 
     public async Task<bool> DeleteAsync(int id)
     {
-        return await _apiClient.DeleteAsync("${Endpoint}/{id}");
+        return await _apiClient.DeleteAsync($"{Endpoint}/{id}");
     }
 }

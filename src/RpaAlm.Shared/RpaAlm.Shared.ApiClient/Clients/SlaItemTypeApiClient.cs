@@ -25,7 +25,7 @@ public class SlaItemTypeApiClient
 
     public async Task<SlaItemTypeDto?> GetByIdAsync(int id)
     {
-        var response = await _apiClient.GetAsync<ApiResponse<SlaItemTypeDto>>("${Endpoint}/{id}");
+        var response = await _apiClient.GetAsync<ApiResponse<SlaItemTypeDto>>($"{Endpoint}/{id}");
         return response?.Data;
     }
 
@@ -37,12 +37,12 @@ public class SlaItemTypeApiClient
 
     public async Task<SlaItemTypeDto?> UpdateAsync(int id, SlaItemTypeUpdateRequest request)
     {
-        var response = await _apiClient.PutAsync<SlaItemTypeUpdateRequest, ApiResponse<SlaItemTypeDto>>("${Endpoint}/{id}", request);
+        var response = await _apiClient.PutAsync<SlaItemTypeUpdateRequest, ApiResponse<SlaItemTypeDto>>($"{Endpoint}/{id}", request);
         return response?.Data;
     }
 
     public async Task<bool> DeleteAsync(int id)
     {
-        return await _apiClient.DeleteAsync("${Endpoint}/{id}");
+        return await _apiClient.DeleteAsync($"{Endpoint}/{id}");
     }
 }

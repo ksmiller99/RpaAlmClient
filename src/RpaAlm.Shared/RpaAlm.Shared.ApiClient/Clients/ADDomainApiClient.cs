@@ -25,7 +25,7 @@ public class ADDomainApiClient
 
     public async Task<ADDomainDto?> GetByIdAsync(int id)
     {
-        var response = await _apiClient.GetAsync<ApiResponse<ADDomainDto>>("${Endpoint}/{id}");
+        var response = await _apiClient.GetAsync<ApiResponse<ADDomainDto>>($"{Endpoint}/{id}");
         return response?.Data;
     }
 
@@ -37,12 +37,12 @@ public class ADDomainApiClient
 
     public async Task<ADDomainDto?> UpdateAsync(int id, ADDomainUpdateRequest request)
     {
-        var response = await _apiClient.PutAsync<ADDomainUpdateRequest, ApiResponse<ADDomainDto>>("${Endpoint}/{id}", request);
+        var response = await _apiClient.PutAsync<ADDomainUpdateRequest, ApiResponse<ADDomainDto>>($"{Endpoint}/{id}", request);
         return response?.Data;
     }
 
     public async Task<bool> DeleteAsync(int id)
     {
-        return await _apiClient.DeleteAsync("${Endpoint}/{id}");
+        return await _apiClient.DeleteAsync($"{Endpoint}/{id}");
     }
 }
