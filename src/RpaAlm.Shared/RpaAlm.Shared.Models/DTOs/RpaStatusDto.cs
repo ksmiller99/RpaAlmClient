@@ -1,6 +1,6 @@
 namespace RpaAlm.Shared.Models.DTOs;
 
-public class StatusDto
+public class RpaStatusDto
 {
     public int Id { get; set; }
     public string? Code { get; set; }

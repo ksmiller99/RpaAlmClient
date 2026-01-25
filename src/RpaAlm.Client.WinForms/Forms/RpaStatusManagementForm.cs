@@ -5,9 +5,9 @@ using RpaAlm.Shared.ApiClient.Clients;
 
 namespace RpaAlm.Client.WinForms.Forms;
 
-public partial class StatusManagementForm : Form
+public partial class RpaStatusManagementForm : Form
 {
-    private readonly StatusApiClient _statusApiClient;
+    private readonly RpaStatusApiClient _rpaStatusApiClient;
     private DataGridView dgvStatuses = null!;
     private TextBox txtCode = null!;
     private TextBox txtDescription = null!;
@@ -19,9 +19,9 @@ public partial class StatusManagementForm : Form
     private Label lblDescription = null!;
     private int? _selectedStatusId;
 
-    public StatusManagementForm()
+    public RpaStatusManagementForm()
     {
-        _statusApiClient = new StatusApiClient();
+        _rpaStatusApiClient = new RpaStatusApiClient();
         InitializeComponents();
         _ = LoadStatusesAsync();
     }
@@ -77,7 +77,7 @@ public partial class StatusManagementForm : Form
     {
         try
         {
-            var statuses = await _statusApiClient.GetAllAsync();
+            var statuses = await _rpaStatusApiClient.GetAllAsync();
             dgvStatuses.DataSource = statuses;
             ClearForm();
         }
@@ -92,7 +92,7 @@ public partial class StatusManagementForm : Form
         if (dgvStatuses.SelectedRows.Count > 0)
         {
             var row = dgvStatuses.SelectedRows[0];
-            var status = row.DataBoundItem as StatusDto;
+            var status = row.DataBoundItem as RpaStatusDto;
 
             if (status != null)
             {
@@ -115,13 +115,13 @@ public partial class StatusManagementForm : Form
                 return;
             }
 
-            var request = new StatusCreateRequest
+            var request = new RpaStatusCreateRequest
             {
                 Code = txtCode.Text.Trim(),
                 Description = string.IsNullOrWhiteSpace(txtDescription.Text) ? null : txtDescription.Text.Trim()
             };
 
-            await _statusApiClient.CreateAsync(request);
+            await _rpaStatusApiClient.CreateAsync(request);
             MessageBox.Show("Status created successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             await LoadStatusesAsync();
         }
@@ -147,13 +147,13 @@ public partial class StatusManagementForm : Form
                 return;
             }
 
-            var request = new StatusUpdateRequest
+            var request = new RpaStatusUpdateRequest
             {
                 Code = txtCode.Text.Trim(),
                 Description = string.IsNullOrWhiteSpace(txtDescription.Text) ? null : txtDescription.Text.Trim()
             };
 
-            await _statusApiClient.UpdateAsync(_selectedStatusId.Value, request);
+            await _rpaStatusApiClient.UpdateAsync(_selectedStatusId.Value, request);
             MessageBox.Show("Status updated successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             await LoadStatusesAsync();
         }
@@ -182,7 +182,7 @@ public partial class StatusManagementForm : Form
 
             if (result == DialogResult.Yes)
             {
-                await _statusApiClient.DeleteAsync(_selectedStatusId.Value);
+                await _rpaStatusApiClient.DeleteAsync(_selectedStatusId.Value);
                 MessageBox.Show("Status deleted successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 await LoadStatusesAsync();
             }

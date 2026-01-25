@@ -32,7 +32,7 @@ public partial class MainMenuForm : Form
         };
 
         int yPos = 100;
-        CreateMenuButton("Status", () => new StatusManagementForm().Show(), new Point(50, yPos));
+        CreateMenuButton("Status", () => new RpaStatusManagementForm().Show(), new Point(50, yPos));
         CreateMenuButton("Complexity", () => new ComplexityManagementForm().Show(), new Point(240, yPos));
         CreateMenuButton("Medal", () => new MedalManagementForm().Show(), new Point(430, yPos));
 
